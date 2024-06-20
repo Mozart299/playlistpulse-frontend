@@ -9,9 +9,10 @@ const user = {
   profilePicture: '/images/profile-picture.jpg',
   bannerImage: '/images/banner-image.jpg',
   playlists: [
-    { id: 1, name: 'Chill Vibes', description: 'Relaxing and soothing tracks.', coverImage: '/images/playlist1.png' },
-    { id: 2, name: 'Workout Mix', description: 'High-energy tracks to boost your workout.', coverImage: '/images/playlist2.png' },
-    // Add more playlists as needed
+    { id: 1, name: 'Chill Vibes', coverImage: '/images/playlist1.jpg' },
+    { id: 2, name: 'Workout Mix', coverImage: '/images/playlist2.jpg' },
+    { id: 3, name: 'Focus Beats', coverImage: '/images/playlist3.jpg' },
+    { id: 4, name: 'Top Hits', coverImage: '/images/playlist4.jpg' },
   ],
 };
 
@@ -23,23 +24,21 @@ const Profile: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-4 mb-8">
           <div className="relative h-64 rounded-lg overflow-hidden mb-4">
             <Image src={user.bannerImage} alt="Banner" layout="fill" objectFit="cover" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black via-transparent to-transparent rounded-lg">
-              <div className="relative flex items-center space-x-4">
-                <div className="relative -mb-20">
-                  <Image src={user.profilePicture} alt="Profile Picture" width={120} height={120} className="rounded-full border-4 border-white" />
-                </div>
-                <div className="text-white">
-                  <h1 className="text-3xl font-bold">{user.name}</h1>
-                  <p className="text-lg">{user.followers.toLocaleString()} followers</p>
-                </div>
-              </div>
-              <div className="ml-auto space-x-4 flex items-center">
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md">Connect</button>
-                <button className="bg-green-500 text-white px-4 py-2 rounded-md">Chat</button>
-              </div>
+          </div>
+          <div className="relative flex items-center pb-2 bg-white rounded-lg">
+            <div className="relative -mt-16">
+              <Image src={user.profilePicture} alt="Profile Picture" width={120} height={120} className="rounded-full border-4 border-white" />
+            </div>
+            <div className="ml-4">
+              <h1 className="text-3xl font-bold">{user.name}</h1>
+              <p className="text-lg">{user.followers.toLocaleString()} followers</p>
+            </div>
+            <div className="ml-auto space-x-4 flex items-center">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-md">Connect</button>
+              <button className="bg-green-500 text-white px-4 py-2 rounded-md">Chat</button>
             </div>
           </div>
-          <div className="flex space-x-8">
+          <div className="flex space-x-8 mt-4">
             <button className="flex items-center space-x-2 bg-blue-500 px-4 py-2 text-white rounded-md">
               <img src="/images/share-icon.png" alt="Share" className="w-5 h-5" />
               <span>Share</span>
@@ -62,20 +61,33 @@ const Profile: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="min-h-screen bg-gray-100 p-8">
-          <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold mb-4">Favorite Playlists</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {user.playlists.map((playlist) => (
-                <div key={playlist.id} className="bg-gray-50 p-4 rounded-lg shadow-sm flex items-center">
-                  <Image src={playlist.coverImage} alt={playlist.name} width={60} height={60} className="rounded-lg" />
-                  <div className="ml-4">
-                    <h3 className="text-xl font-semibold">{playlist.name}</h3>
-                    <p className="text-gray-500">{playlist.description}</p>
-                  </div>
-                </div>
-              ))}
+        <div className="bg-white rounded-lg py-8 mb-8">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gray-200 mr-20 p-6 rounded-lg">
+              <h3 className="text-x font-bold mb-2">User Info</h3>
+              <div className="space-y-2">
+                <button className="bg-gray-300 p-2 rounded-md w-full text-center">Add bio</button>
+                <button className="bg-gray-300 p-2 rounded-md w-full text-center">Edit Profile</button>
+                <button className="bg-gray-300 p-2 rounded-md w-full text-center">Add interests</button>
+              </div>
             </div>
+            <div className="bg-gray-200 p-6 rounded-lg">Content 2</div>
+            <div className="bg-gray-300 mr-20 p-6 rounded-lg">
+              <h3 className="text-x font-bold mb-2">Shared Playlists</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {user.playlists.map((playlist) => (
+                  <div key={playlist.id} className="relative group">
+                    <div className="w-full h-32 rounded-lg overflow-hidden">
+                      <Image src={playlist.coverImage} alt={playlist.name} layout="fill" objectFit="cover" className="rounded-lg" />
+                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                      <span className="text-white text-center">{playlist.name}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-gray-300 p-6 rounded-lg">Content 4</div>
           </div>
         </div>
       </div>
