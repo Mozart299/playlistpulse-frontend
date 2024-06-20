@@ -17,7 +17,7 @@ const TopBar: React.FC = () => {
                 </div>
                 <input
                     type="text"
-                    placeholder="Enter your favorite music genre"
+                    placeholder="Search for music playlists"
                     className="w-full p-2 rounded-md border border-gray-300 placeholder-padding"
                 />
             </div>

@@ -1,6 +1,6 @@
 import React from "react";
-import TopBar from "./components/TopBar";
-import Sidebar from "./components/Sidebar";
+import TopBar from "../components/TopBar";
+import Sidebar from "../components/Sidebar";
 
 const Home: React.FC = () => {
     return (
