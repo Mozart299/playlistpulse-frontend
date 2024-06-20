@@ -1,13 +1,12 @@
-
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const SideBar: React.FC = () => {
+const RightSideBar: React.FC = () => {
     return (
-        <div className="bg-customgray text-black w-56 min-h-screen flex flex-col">
-            <div className="flex p-6 ">
-                <span className="text-2xl font-bold ">Discover</span>
+        <div className="bg-customgray text-black w-64 min-h-screen right-0 flex flex-col">
+            <div className="flex p-6">
+                <span className="text-2xl font-bold">Discover</span>
             </div>
             <nav className="flex flex-col p-4">
                 <Link href="/dashboard" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
@@ -68,7 +67,6 @@ const SideBar: React.FC = () => {
                     <Image src="/images/ticket-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
                     Oldies Lovers
                 </Link>
-
                 <Link href="/messages" className="flex items-center px-4 pt-20 hover:bg-gray-700 rounded-md">
                     <Image src="/images/question-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
                     Support Center
@@ -77,12 +75,9 @@ const SideBar: React.FC = () => {
                     <Image src="/images/signout-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
                     Sign Out
                 </Link>
-
-
-
             </nav>
         </div>
     );
 };
 
-export default SideBar;
+export default RightSideBar;
