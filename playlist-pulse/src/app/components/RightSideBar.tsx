@@ -1,12 +1,13 @@
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const RightSideBar: React.FC = () => {
     return (
-        <div className="bg-customgray text-black w-64 min-h-screen right-0 flex flex-col">
-            <div className="flex p-6">
-                <span className="text-2xl font-bold">Discover</span>
+        <div className="bg-customgray text-black w-56 min-h-screen flex flex-col">
+            <div className="flex p-6 ">
+                <span className="text-2xl font-bold ">Discover</span>
             </div>
             <nav className="flex flex-col p-4">
                 <Link href="/dashboard" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
@@ -67,6 +68,7 @@ const RightSideBar: React.FC = () => {
                     <Image src="/images/ticket-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
                     Oldies Lovers
                 </Link>
+
                 <Link href="/messages" className="flex items-center px-4 pt-20 hover:bg-gray-700 rounded-md">
                     <Image src="/images/question-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
                     Support Center
