@@ -22,7 +22,7 @@ const RightSideBar: React.FC = () => {
                 Retro Mix 
             </Link>
             <div className='flex px-4 pt-5 pb-2'>
-                    <span className='text-xl font-semibold'>Interest Groups</span>
+                    <span className='font-semibold'>Interest Groups</span>
                 </div>
                 <Link href="/messages" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
                     <Image src="/images/event4.jpg" alt="Playlists" width={30} height={30} className="mr-3 rounded-md" />
