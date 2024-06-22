@@ -6,78 +6,84 @@ import Image from 'next/image';
 const RightSideBar: React.FC = () => {
     return (
         <div className="bg-customgray text-black w-56 min-h-screen flex flex-col">
-            <div className="flex p-6 ">
-                <span className="text-2xl font-bold ">Discover</span>
+            <div className="flex flex-col p-4 ">
+                <span className=" font-semibold ">Music Community Chats</span>
             </div>
-            <nav className="flex flex-col p-4">
-                <Link href="/dashboard" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/home-icon.png" alt="Home" width={20} height={20} className="mr-3" />
-                    Home
-                </Link>
-                <Link href="/profile" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/profile-icon.png" alt="Profile" width={20} height={20} className="mr-3" />
-                    My Profile
-                </Link>
-                <div className='flex px-4 pt-5 pb-2'>
-                    <span className='text-xl font-semibold'>My Favourites</span>
-                </div>
-                <Link href="/messages" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/messages-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
-                    Inbox
-                </Link>
-                <Link href="/playlists" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/people-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
-                    My Connections
-                </Link>
-                <Link href="/settings" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/list-icon.png" alt="Settings" width={20} height={20} className="mr-3" />
-                    News Feed
-                </Link>
-                <Link href="/messages" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/messages-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
-                    Latest Updates
-                </Link>
-                <Link href="/playlists" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/ticket-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
-                    Upcoming Events
-                </Link>
-                <Link href="/settings" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/lamp-icon.png" alt="Settings" width={20} height={20} className="mr-3" />
-                    Special Moments
-                </Link>
-                <div className='flex px-4 pt-5 pb-2'>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/albumcover1.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Folk Enthusiasts
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/playlist4.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Nordic Friends Band
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/playlist3.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Retro Mix 
+            </Link>
+            <div className='flex px-4 pt-5 pb-2'>
                     <span className='text-xl font-semibold'>Interest Groups</span>
                 </div>
                 <Link href="/messages" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/messages-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
+                    <Image src="/images/event4.jpg" alt="Playlists" width={30} height={30} className="mr-3 rounded-md" />
                     Music Enthusiasts
                 </Link>
                 <Link href="/playlists" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/people-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
+                    <Image src="/images/albumcover1.jpg" alt="Playlists" width={30} height={30} className="mr-3 rounded-md" />
                     Amapiano Groove
                 </Link>
                 <Link href="/settings" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/list-icon.png" alt="Settings" width={20} height={20} className="mr-3" />
+                    <Image src="/images/albumcover2.jpg" alt="Settings" width={30} height={30} className="mr-3 rounded-md" />
                     Mental Heads
                 </Link>
                 <Link href="/messages" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/messages-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
+                    <Image src="/images/albumcover3.jpg" alt="Playlists" width={30} height={30} className="mr-3 rounded-md" />
                     Latest Updates
                 </Link>
                 <Link href="/playlists" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/ticket-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
+                    <Image src="/images/albumcover4.jpg" alt="Playlists" width={30} height={30} className="mr-3 rounded-md" />
                     Oldies Lovers
                 </Link>
+            <div className="flex flex-col p-4 ">
+                <span className=" font-semibold ">Connect with Others</span>
+            </div>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/event2.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music lover
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/albumcover1.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Playlist curator
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/event1.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music fan
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/event2.jpg" alt="image" width={50} height={50} className="mr-3 event4" />
+                Playlist sharer
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/event5.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music Buddy
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/albumcover3.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music explorer
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/albumcover4.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music aficionado
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/albumcover2.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music listener
+            </Link>
+            <Link href="/dashboard" className="flex items-center px-4 py-2">
+                <Image src="/images/albumcover1.jpg" alt="image" width={50} height={50} className="mr-3 rounded-md" />
+                Music supporter
+            </Link>
 
-                <Link href="/messages" className="flex items-center px-4 pt-20 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/question-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
-                    Support Center
-                </Link>
-                <Link href="/playlists" className="flex items-center px-4 py-2 hover:bg-gray-700 rounded-md">
-                    <Image src="/images/signout-icon.png" alt="Playlists" width={20} height={20} className="mr-3" />
-                    Sign Out
-                </Link>
-            </nav>
         </div>
     );
 };
