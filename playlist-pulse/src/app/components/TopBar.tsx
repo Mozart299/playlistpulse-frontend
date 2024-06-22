@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 const TopBar: React.FC = () => {
     return (
-        <div className="bg-white shadow-md py-5 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
+        <div className="bg-brand shadow-md py-5 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
             <div className="flex items-center">
-                <Link href="/" className="text-2xl font-bold">
+                <Link href="/" className="text-2xl font-bold text-white">
                     The Playlist
                 </Link>
             </div>
@@ -22,10 +22,10 @@ const TopBar: React.FC = () => {
             </div>
             <div className="flex items-center space-x-4">
                 <Link href="/messages" className="relative">
-                    <img src="/assets/chat.png" alt="Messages" className="w-4 h-4" />
+                    <img src="/assets/chat.svg" alt="Messages" className="w-4 h-4" />
                 </Link>
                 <Link href="/notifications" className="relative">
-                    <img src="/assets/notification.png" alt="Notifications" className="w-4 h-4" />
+                    <img src="/assets/notification.svg" alt="Notifications" className="w-4 h-4" />
                 </Link>
                 <Link href="/profile" className="relative">
                     <Image src="/images/profile-picture.jpg" alt="Profile" width={40} height={40} className="rounded-full" />
