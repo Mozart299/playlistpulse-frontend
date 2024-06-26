@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import Image from 'next/image';
 import Link from "next/link";
-import TopBar from "./components/TopBar";
-import SideBar from "./components/SideBar";
-import RightSideBar from "./components/RightSideBar";
+import TopBar from "../../components/TopBar";
+import SideBar from "../../components/SideBar";
+import RightSideBar from "../../components/RightSideBar";
 
 const post = {
   userProfileImage: '/images/profile-picture.jpg',

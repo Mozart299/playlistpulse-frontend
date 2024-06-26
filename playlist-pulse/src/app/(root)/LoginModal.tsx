@@ -1,6 +1,8 @@
 'use client'
 
+import Link from 'next/link';
 import React from 'react';
+import Home from '../(dashboard)/home/page';
 
 const LoginModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,9 +28,9 @@ const LoginModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             By logging in, you agree to our terms. Read our privacy policy.
           </p>
           <div className="space-y-4">
-            <button className="bg-green-500 text-white px-4 py-2 rounded-full w-full flex items-center justify-center hover:bg-green-600">
+            <Link className="bg-green-500 text-white px-4 py-2 rounded-full w-full flex items-center justify-center hover:bg-green-600" href="/home">
               <img src="/assets/spotify.png" alt="Spotify Logo" className="w-6 h-6 mr-2" /> Login with Spotify
-            </button>
+            </Link>
             <button className="bg-black text-white px-4 py-2 rounded-full w-full flex items-center justify-center hover:bg-gray-800">
               <img src="/assets/apple music.png" alt="Apple Music Logo" className="w-6 h-6 mr-2" /> Login with Apple Music
             </button>
