@@ -1,20 +1,20 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import LoginModal from './LoginModal';
 
+
 const WelcomePage: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
-  
     const openModal = () => {
       setShowModal(true);
     };
-  
     const closeModal = () => {
       setShowModal(false);
     };
+
   
     return (
       <div className="flex h-screen">

@@ -6,7 +6,7 @@ export const sidebarLinks = [
     },
     {
         imgURL: "/assets/user.png",
-        route: "/profile",
+        route: "/my-profile",
         label: "My Profile"
     },
     {

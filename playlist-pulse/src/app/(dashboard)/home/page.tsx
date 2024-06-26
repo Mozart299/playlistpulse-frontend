@@ -1,10 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,  useEffect } from "react";
 import Image from 'next/image';
 import Link from "next/link";
 import TopBar from "../../components/TopBar";
 import SideBar from "../../components/SideBar";
 import RightSideBar from "../../components/RightSideBar";
+
 
 
 const post = {
@@ -41,6 +42,8 @@ const Home: React.FC = () => {
       setPostImages((prevImages) => [...prevImages, ...filesArray]);
     }
   };
+
+
 
   return (
     <div className="flex min-h-screen">

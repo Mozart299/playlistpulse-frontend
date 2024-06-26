@@ -1,16 +1,18 @@
 'use client'
 
-import Link from 'next/link';
 import React from 'react';
-import Home from '../(dashboard)/home/page';
+import { signIn } from 'next-auth/react';
 
 const LoginModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Implement your login logic here
-    console.log('Logging in...');
-    onClose(); // Close the modal after successful login
-  };
+  
+  const handleClick = () => {
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    const redirectUrl = process.env.NEXTAUTH_URL;
+    const apiUrl = "http://localhost:3000/";
+    const scope = [
+
+    ]
+  }
 
   return (
     <div className="fixed z-10 inset-0 flex items-center justify-center">
@@ -28,9 +30,9 @@ const LoginModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             By logging in, you agree to our terms. Read our privacy policy.
           </p>
           <div className="space-y-4">
-            <Link className="bg-green-500 text-white px-4 py-2 rounded-full w-full flex items-center justify-center hover:bg-green-600" href="/home">
+            <button onClick={handleClick} className="bg-green-500 text-white px-4 py-2 rounded-full w-full flex items-center justify-center hover:bg-green-600" >
               <img src="/assets/spotify.png" alt="Spotify Logo" className="w-6 h-6 mr-2" /> Login with Spotify
-            </Link>
+            </button>
             <button className="bg-black text-white px-4 py-2 rounded-full w-full flex items-center justify-center hover:bg-gray-800">
               <img src="/assets/apple music.png" alt="Apple Music Logo" className="w-6 h-6 mr-2" /> Login with Apple Music
             </button>
