@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import Image from 'next/image';
-import TopBar from './TopBar';
+import TopBar from '@/app/components/TopBar';
 
 const user = {
   name: 'Mozart',
@@ -60,7 +60,7 @@ const Profile: React.FC = () => {
   return (
     <div>
       <TopBar />
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto mt-24 p-4">
         <div className="bg-white rounded-lg shadow-md p-4 mb-8">
           <div className="relative h-40 rounded-lg overflow-hidden mb-4">
             <Image src={user.bannerImage} alt="Banner" layout="fill" objectFit="cover" className="w-full h-full object-cover" />
