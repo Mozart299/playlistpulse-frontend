@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import Image from 'next/image';
-import TopBar from '../components/TopBar';
+import TopBar from './TopBar';
 
 const user = {
   name: 'Mozart',

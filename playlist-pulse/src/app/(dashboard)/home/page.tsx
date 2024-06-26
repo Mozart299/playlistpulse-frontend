@@ -6,6 +6,7 @@ import TopBar from "../../components/TopBar";
 import SideBar from "../../components/SideBar";
 import RightSideBar from "../../components/RightSideBar";
 
+
 const post = {
   userProfileImage: '/images/profile-picture.jpg',
   userName: 'John Smith',
