@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
   children,
@@ -6,7 +7,7 @@ export default function RootLayout({
 }>) {
   return (
     <main>
-        {children}
+      {children}
     </main>
   );
 }
