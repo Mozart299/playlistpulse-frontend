@@ -4,9 +4,17 @@ import React, { useState} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import LoginModal from './LoginModal';
+import SessionWrapper from '../components/SessionWrapper';
+import { signOut } from 'next-auth/react';
 
 
 const WelcomePage: React.FC = () => {
+  const logout = (e:any) => {
+    e.preventDefault()
+    signOut();
+  }
+
+
     const [showModal, setShowModal] = useState(false);
     const openModal = () => {
       setShowModal(true);
@@ -14,7 +22,6 @@ const WelcomePage: React.FC = () => {
     const closeModal = () => {
       setShowModal(false);
     };
-
   
     return (
       <div className="flex h-screen">

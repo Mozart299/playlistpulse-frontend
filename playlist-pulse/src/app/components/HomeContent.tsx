@@ -2,23 +2,25 @@
 import React, { useState, useEffect } from "react";
 import Image from 'next/image';
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 
-const post = {
-    userProfileImage: '/images/profile-picture.jpg',
-    userName: 'John Smith',
-    postTitle: 'My Recent Adventure',
-    postTime: '2 hours ago',
-    postContent: 'Had an amazing time hiking the trails at the national park. The views were breathtaking!',
-    postImages: [
-        '/images/playlist1.jpg',
-        '/images/playlist3.jpg',
-        '/images/playlist4.jpg',
-    ],
-};
 
 const HomeContent: React.FC = () => {
+    const { data: session, status } = useSession();
 
+    const post = {
+        userProfileImage: '/images/profile-picture.jpg',
+        userName: 'John Smith',
+        postTitle: 'My Recent Adventure',
+        postTime: '2 hours ago',
+        postContent: 'Had an amazing time hiking the trails at the national park. The views were breathtaking!',
+        postImages: [
+            '/images/playlist1.jpg',
+            '/images/playlist3.jpg',
+            '/images/playlist4.jpg',
+        ],
+    };
 
     const [postContent, setPostContent] = useState('');
     const [postImages, setPostImages] = useState<string[]>([]);
@@ -49,7 +51,7 @@ const HomeContent: React.FC = () => {
                     <form onSubmit={handlePostSubmit}>
                         {/* Your form content */}
                         <div className="flex items-center mb-4">
-                            <Image src="/images/profile-picture.jpg" alt="User Profile" width={40} height={40} className="rounded-lg" />
+                            <Image src={session?.user?.image as string} alt="User Profile" width={40} height={40} className="rounded-lg" />
                             <input
                                 type="text"
                                 value={postContent}
@@ -112,7 +114,65 @@ const HomeContent: React.FC = () => {
                         </button>
                     </div>
                 </div>
+                <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
+                    <div className="flex items-center mb-4">
+                        <Image src="/images/profile-picture3.jpg" alt="User Profile" width={40} height={40} className="rounded-md" />
+                        <div className="ml-3">
+                            <p className="font-bold">Paul Wayden</p>
+                            <p className="text-sm text-gray-600">{post.postTime}</p>
+                        </div>
+                    </div>
+                    <p className="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vehicula mauris et sem consequat, a pellentesque eros sagittis.</p>
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                        <Image src="/images/event1.jpg" alt="Photo 1" width={150} height={150} className="rounded-lg" />
+                        <Image src="/images/event2.jpg" alt="Photo 2" width={150} height={150} className="rounded-lg" />
+                        <Image src="/images/event3.jpg" alt="Photo 3" width={150} height={150} className="rounded-lg" />
+                        <Image src="/images/playlist5.jpg" alt="Photo 1" width={150} height={150} className="rounded-lg" />
+                        <Image src="/images/albumcover2.jpg" alt="Photo 2" width={150} height={150} className="rounded-lg" />
+                        <Image src="/images/albumcover5.jpg" alt="Photo 3" width={150} height={150} className="rounded-lg" />
+                    </div>
+                    <div className="flex justify-between items-center mt-4">
+                        <button className="flex items-center space-x-1 text-gray-600">
+                            <Image src="/assets/like.png" alt="Like" width={20} height={20} />
+                            <span>Like</span>
+                        </button>
+                        <button className="flex items-center space-x-1 text-gray-600">
+                            <Image src="/assets/comment.png" alt="Comment" width={20} height={20} />
+                            <span>Comment</span>
+                        </button>
+                        <button className="flex items-center space-x-1 text-gray-600">
+                            <Image src="/assets/share.png" alt="Share" width={20} height={20} />
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
+                <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
+                    <div className="flex items-center mb-4">
+                        <Image src="/images/profile-picture5.jpg" alt="User Profile" width={40} height={40} className="rounded-md" />
+                        <div className="ml-3">
+                            <p className="font-bold">Peter Olamide</p>
+                            <p className="text-sm text-gray-600">{post.postTime}</p>
+                        </div>
+                    </div>
+                    <p className="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vehicula mauris et sem consequat, a pellentesque eros sagittis.</p>
+                    <div className="flex justify-between items-center mt-4">
+                        <button className="flex items-center space-x-1 text-gray-600">
+                            <Image src="/assets/like.png" alt="Like" width={20} height={20} />
+                            <span>Like</span>
+                        </button>
+                        <button className="flex items-center space-x-1 text-gray-600">
+                            <Image src="/assets/comment.png" alt="Comment" width={20} height={20} />
+                            <span>Comment</span>
+                        </button>
+                        <button className="flex items-center space-x-1 text-gray-600">
+                            <Image src="/assets/share.png" alt="Share" width={20} height={20} />
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
             </div>
+
+
             {/*Side content*/}
             <div className="w-80 overflow-y-auto p-4">
                 {/* Your side content */}

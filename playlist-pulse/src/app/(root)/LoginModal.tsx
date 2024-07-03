@@ -1,15 +1,16 @@
 'use client'
 
 import React from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 
 const LoginModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  
-  const login = () => {
+  const login = (e:any) => {
+    e.preventDefault()
     signIn('spotify', { callbackUrl: 'http://localhost:3000/home' });
   }
 
   return (
+  
     <div className="fixed z-10 inset-0 flex items-center justify-center">
       <div className="fixed inset-0 bg-black opacity-75" onClick={onClose}></div>
       <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-md w-full p-4 z-20">

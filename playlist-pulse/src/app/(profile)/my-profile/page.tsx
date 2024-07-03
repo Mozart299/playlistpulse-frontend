@@ -1,36 +1,42 @@
 "use client"
 import React, { useState } from 'react';
-import Image from 'next/image';
+import Image  from 'next/image';
 import TopBar from '@/app/components/TopBar';
+import { useSession } from 'next-auth/react';
 
-const user = {
-  name: 'Mozart',
-  followers: 34554,
-  profilePicture: '/images/profile-picture.jpg',
-  bannerImage: '/images/banner-image.jpg',
-  playlists: [
-    { id: 1, name: 'Chill Vibes', coverImage: '/images/playlist1.jpg' },
-    { id: 2, name: 'Workout Mix', coverImage: '/images/playlist2.jpg' },
-    { id: 3, name: 'Focus Beats', coverImage: '/images/playlist3.jpg' },
-    { id: 4, name: 'Top Hits', coverImage: '/images/playlist4.jpg' },
-  ],
-};
 
-const post = {
-  userProfileImage: '/images/profile-picture.jpg',
-  userName: 'John Smith',
-  postTitle: 'My Recent Adventure',
-  postTime: '2 hours ago',
-  postContent: 'Had an amazing time hiking the trails at the national park. The views were breathtaking!',
-  postImages: [
-    '/images/playlist1.jpg',
-    '/images/playlist3.jpg',
-    '/images/playlist4.jpg',
-  ],
-};
 
 
 const Profile: React.FC = () => {
+  const { data: session, status } = useSession();
+  
+
+  const user = {
+    name: session?.user?.name,
+    followers: 34554,
+    profilePicture: session?.user?.image as string,
+    bannerImage: '/images/banner-image.jpg',
+    playlists: [
+      { id: 1, name: 'Chill Vibes', coverImage: '/images/playlist1.jpg' },
+      { id: 2, name: 'Workout Mix', coverImage: '/images/playlist2.jpg' },
+      { id: 3, name: 'Focus Beats', coverImage: '/images/playlist3.jpg' },
+      { id: 4, name: 'Top Hits', coverImage: '/images/playlist4.jpg' },
+    ],
+  };
+  
+  const post = {
+    userProfileImage: '/images/profile-picture.jpg',
+    userName: 'John Smith',
+    postTitle: 'My Recent Adventure',
+    postTime: '2 hours ago',
+    postContent: 'Had an amazing time hiking the trails at the national park. The views were breathtaking!',
+    postImages: [
+      '/images/playlist1.jpg',
+      '/images/playlist3.jpg',
+      '/images/playlist4.jpg',
+    ],
+  };
+
   const [postContent, setPostContent] = useState('');
   const [postImages, setPostImages] = useState<string[]>([]);
 
