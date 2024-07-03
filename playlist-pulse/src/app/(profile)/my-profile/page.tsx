@@ -1,29 +1,40 @@
 "use client"
-import React, { useState } from 'react';
-import Image  from 'next/image';
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import TopBar from '@/app/components/TopBar';
 import { useSession } from 'next-auth/react';
-
-
-
+import axios from 'axios';
 
 const Profile: React.FC = () => {
   const { data: session, status } = useSession();
-  
+  const [playlists, setPlaylists] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      if (session?.accessToken) {
+        try {
+          const response = await axios.get('https://api.spotify.com/v1/me/playlists', {
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+          });
+          setPlaylists(response.data.items);
+        } catch (error) {
+          console.error('Error fetching playlists:', error);
+        }
+      }
+    };
+
+    fetchPlaylists();
+  }, [session]);
 
   const user = {
     name: session?.user?.name,
     followers: 34554,
     profilePicture: session?.user?.image as string,
     bannerImage: '/images/banner-image.jpg',
-    playlists: [
-      { id: 1, name: 'Chill Vibes', coverImage: '/images/playlist1.jpg' },
-      { id: 2, name: 'Workout Mix', coverImage: '/images/playlist2.jpg' },
-      { id: 3, name: 'Focus Beats', coverImage: '/images/playlist3.jpg' },
-      { id: 4, name: 'Top Hits', coverImage: '/images/playlist4.jpg' },
-    ],
   };
-  
+
   const post = {
     userProfileImage: '/images/profile-picture.jpg',
     userName: 'John Smith',
@@ -42,14 +53,11 @@ const Profile: React.FC = () => {
 
   const handlePostSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle the post submission logic here
     console.log('Post content:', postContent);
     console.log('Post images:', postImages);
     setPostContent('');
     setPostImages([]);
   };
-
-
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -61,7 +69,6 @@ const Profile: React.FC = () => {
       filesArray.forEach((url) => URL.revokeObjectURL(url));
     }
   };
-
 
   return (
     <div>
@@ -86,7 +93,6 @@ const Profile: React.FC = () => {
           </div>
           <div className="flex space-x-4 mt-4">
             <button className="flex items-center space-x-2 bg-brand px-4 py-2 text-white rounded-md">
-              {/* <img src="/images/share-icon.png" alt="Share" className="w-5 h-5" /> */}
               <span>Share</span>
             </button>
             <button className="flex items-center space-x-2 bg-customgray text-black px-4 py-2 rounded-md">
@@ -155,15 +161,15 @@ const Profile: React.FC = () => {
             <div className=" bg-gray-300  p-6 rounded-lg">
               <h3 className="text-x font-bold mb-2">Shared Playlists</h3>
               <div className="grid grid-cols-2 gap-2">
-                {user.playlists.map((playlist) => (
-                  <div key={playlist.id} className="relative group">
+                {playlists.map((playlist) => (
+                  <a key={playlist.id} href={playlist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="relative group">
                     <div className="w-full h-32 rounded-lg overflow-hidden">
-                      <Image src={playlist.coverImage} alt={playlist.name} layout="fill" objectFit="cover" className="rounded-lg" />
+                      <Image src={playlist.images[0]?.url || '/default-playlist.png'} alt={playlist.name} layout="fill" objectFit="cover" className="rounded-lg" />
                     </div>
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
                       <span className="text-white text-center">{playlist.name}</span>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>

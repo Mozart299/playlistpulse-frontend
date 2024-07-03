@@ -8,6 +8,21 @@ const options = {
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID as string,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET as string,
+      authorization: {
+        url: "https://accounts.spotify.com/authorize",
+        params: {
+          scope: [
+            "playlist-read-private",
+            "playlist-read-collaborative",
+            "playlist-modify-private",
+            "playlist-modify-public",
+            "user-library-read",
+            "user-library-modify",
+            "user-read-private",
+            "user-read-email",
+          ].join(" "),
+        },
+      },
     }),
   ],
   callbacks: {
