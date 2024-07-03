@@ -14,6 +14,28 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'image-cdn-ak.spotifycdn.com',
+        port: '',
+        pathname: '/**',
+      },
+
+      {
+        protocol: 'https',
+        hostname: 'daylist.spotifycdn.com',
+        port: '',
+        pathname: '/**',
+      },
+
+      {
+        protocol: 'https',
+        hostname: 'lexicon-assets.spotifycdn.com',
+        port: '',
+        pathname: '/**',
+      },
+
+
 
     ],
   },
