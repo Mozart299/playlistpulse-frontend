@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const RightSideBar: React.FC = () => {
     return (
-        <div className="bg-customgray text-black w-56 min-h-screen flex flex-col">
+        <div className="bg-customgray text-black w-56 min-h-screen flex flex-col ">
             <div className="flex flex-col p-4 ">
                 <span className=" font-semibold ">Music Community Chats</span>
             </div>

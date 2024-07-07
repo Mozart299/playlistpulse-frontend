@@ -3,7 +3,11 @@ import React, { useState, useEffect } from "react";
 import Image from 'next/image';
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import EmojiPicker  from 'emoji-picker-react';
+import EmojiPicker from 'emoji-picker-react';
+import axios from 'axios';
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import { useRelativeTime } from "../utils/useRelativeTime";
+import PostItem from "./PostItem";
 
 
 const HomeContent: React.FC = () => {
@@ -11,27 +15,9 @@ const HomeContent: React.FC = () => {
     const [postContent, setPostContent] = useState('');
     const [postImages, setPostImages] = useState<string[]>([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [location, setLocation] = useState('');
+    const [posts, setPosts] = useState<any[]>([]);
 
-    const post = {
-        userProfileImage: '/images/profile-picture.jpg',
-        userName: 'John Smith',
-        postTitle: 'My Recent Adventure',
-        postTime: '2 hours ago',
-        postContent: 'Had an amazing time hiking the trails at the national park. The views were breathtaking!',
-        postImages: [
-            '/images/playlist1.jpg',
-            '/images/playlist3.jpg',
-            '/images/playlist4.jpg',
-        ],
-    };
-
-    const handlePostSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Post content:', postContent);
-        console.log('Post images:', postImages);
-        setPostContent('');
-        setPostImages([]);
-    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -39,8 +25,6 @@ const HomeContent: React.FC = () => {
                 URL.createObjectURL(file)
             );
             setPostImages((prevImages) => [...prevImages, ...filesArray]);
-
-            filesArray.forEach((url) => URL.revokeObjectURL(url));
         }
     };
 
@@ -52,10 +36,10 @@ const HomeContent: React.FC = () => {
     };
 
     const handleLocationInsert = () => {
-        // This is a placeholder. In a real app, you'd use a location API
-        const location = prompt("Enter your location:");
-        if (location) {
-            setPostContent(prevContent => prevContent + ' 📍 ' + location);
+        const newLocation = prompt("Enter your location:");
+        if (newLocation) {
+            setLocation(newLocation);
+            setPostContent(prevContent => prevContent + ' 📍 ' + newLocation);
         }
     };
 
@@ -63,6 +47,66 @@ const HomeContent: React.FC = () => {
         setPostContent(prevContent => prevContent + emojiObject.emoji);
         setShowEmojiPicker(false);
     };
+
+
+
+    const handlePostSubmit = (e: any) => {
+        e.preventDefault();
+        const post = {
+            content: postContent,
+            images: postImages,
+            location: location,
+            created_at: new Date().toISOString(),
+        };
+        onPostSubmit(post);
+        setPostContent('');
+        setPostImages([]);
+        setLocation('');
+    };
+
+
+    const isShareButtonEnabled = postContent.trim() !== '' || postImages.length > 0 || location !== '';
+
+
+    const onPostSubmit = async (postData: any) => {
+        try {
+            // Send the post data to your API
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(postData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit post');
+            }
+
+            const newPost = await response.json();
+
+            // Update the local state with the new post
+            setPosts(prevPosts => [newPost, ...prevPosts]);
+
+            // Optionally, you could show a success message to the user
+            alert('Post submitted successfully!');
+        } catch (error) {
+            console.error('Error submitting post:', error);
+            // Optionally, show an error message to the user
+            alert('Failed to submit post. Please try again.');
+        }
+    };
+
+    useEffect(() => {
+        async function fetchPosts() {
+            const response = await axios.get('/api/posts');
+            setPosts(response.data);
+        }
+
+        fetchPosts();
+    }, []);
+
+
 
     return (
         <>
@@ -78,7 +122,7 @@ const HomeContent: React.FC = () => {
                                 value={postContent}
                                 onChange={(e) => setPostContent(e.target.value)}
                                 className="ml-4 w-full p-2 border border-gray-300 rounded-lg"
-                                placeholder="Share your favourite Spotify playlist..."
+                                placeholder="Share your thoughts"
                             />
                         </div>
                         <div className="flex items-center justify-between mb-4">
@@ -111,7 +155,11 @@ const HomeContent: React.FC = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </button>
-                            <button type="submit" className="bg-brand text-white px-4 py-2 rounded-md">
+                            <button
+                                type="submit"
+                                className={`bg-brand text-white px-4 py-2 rounded-md ${!isShareButtonEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={!isShareButtonEnabled}
+                            >
                                 Share
                             </button>
                         </div>
@@ -131,90 +179,15 @@ const HomeContent: React.FC = () => {
                         )}
                     </form>
                 </div>
-                {/* Your posts and other content */}
-                <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
-                    <div className="flex items-center mb-4">
-                        <Image src="/images/profile-picture4.jpg" alt="User Profile" width={40} height={40} className="rounded-md" />
-                        <div className="ml-3">
-                            <p className="font-bold">Angella Davont</p>
-                            <p className="text-sm text-gray-600">{post.postTime}</p>
-                        </div>
-                    </div>
-                    <p className="text-gray-700 mb-4">Share your music journey and connect with like-minded individuals. Here's a glimpse of my latest music adventures.</p>
-                    <div className="flex space-x-4 mb-4">
-                        <Image src="/images/event4.jpg" alt="Photo 1" width={200} height={200} className="rounded-lg" />
-                        <Image src="/images/albumcover4.jpg" alt="Photo 2" width={200} height={200} className="rounded-lg" />
-                    </div>
-                    <div className="flex justify-between items-center mt-4">
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/like.png" alt="Like" width={20} height={20} />
-                            <span>Like</span>
-                        </button>
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/comment.png" alt="Comment" width={20} height={20} />
-                            <span>Comment</span>
-                        </button>
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/share.png" alt="Share" width={20} height={20} />
-                            <span>Share</span>
-                        </button>
-                    </div>
-                </div>
-                <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
-                    <div className="flex items-center mb-4">
-                        <Image src="/images/profile-picture3.jpg" alt="User Profile" width={40} height={40} className="rounded-md" />
-                        <div className="ml-3">
-                            <p className="font-bold">Paul Wayden</p>
-                            <p className="text-sm text-gray-600">{post.postTime}</p>
-                        </div>
-                    </div>
-                    <p className="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vehicula mauris et sem consequat, a pellentesque eros sagittis.</p>
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                        <Image src="/images/event1.jpg" alt="Photo 1" width={150} height={150} className="rounded-lg" />
-                        <Image src="/images/event2.jpg" alt="Photo 2" width={150} height={150} className="rounded-lg" />
-                        <Image src="/images/event3.jpg" alt="Photo 3" width={150} height={150} className="rounded-lg" />
-                        <Image src="/images/playlist5.jpg" alt="Photo 1" width={150} height={150} className="rounded-lg" />
-                        <Image src="/images/albumcover2.jpg" alt="Photo 2" width={150} height={150} className="rounded-lg" />
-                        <Image src="/images/albumcover5.jpg" alt="Photo 3" width={150} height={150} className="rounded-lg" />
-                    </div>
-                    <div className="flex justify-between items-center mt-4">
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/like.png" alt="Like" width={20} height={20} />
-                            <span>Like</span>
-                        </button>
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/comment.png" alt="Comment" width={20} height={20} />
-                            <span>Comment</span>
-                        </button>
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/share.png" alt="Share" width={20} height={20} />
-                            <span>Share</span>
-                        </button>
-                    </div>
-                </div>
-                <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
-                    <div className="flex items-center mb-4">
-                        <Image src="/images/profile-picture5.jpg" alt="User Profile" width={40} height={40} className="rounded-md" />
-                        <div className="ml-3">
-                            <p className="font-bold">Peter Olamide</p>
-                            <p className="text-sm text-gray-600">{post.postTime}</p>
-                        </div>
-                    </div>
-                    <p className="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vehicula mauris et sem consequat, a pellentesque eros sagittis.</p>
-                    <div className="flex justify-between items-center mt-4">
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/like.png" alt="Like" width={20} height={20} />
-                            <span>Like</span>
-                        </button>
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/comment.png" alt="Comment" width={20} height={20} />
-                            <span>Comment</span>
-                        </button>
-                        <button className="flex items-center space-x-1 text-gray-600">
-                            <Image src="/assets/share.png" alt="Share" width={20} height={20} />
-                            <span>Share</span>
-                        </button>
-                    </div>
+                 {/* Posts */}
+                 <div>
+                    {posts.map(post => (
+                        <PostItem 
+                            key={post._id} 
+                            post={post} 
+                            userImage={session?.user?.image as string} 
+                        />
+                    ))}
                 </div>
             </div>
 
