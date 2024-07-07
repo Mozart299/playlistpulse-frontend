@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { sidebarLinks } from '../constants'; 
+
 const SideBar: React.FC = () => {
     return (
         <div className="bg-customgray text-black w-56 min-h-screen flex flex-col fixed top-0 left-0 z-40">

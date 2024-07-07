@@ -4,6 +4,8 @@ import Image from 'next/image';
 import TopBar from '@/app/components/TopBar';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import Link from 'next/link';
+import AllPlaylists from '@/app/(playlists)/all-playlists/page';
 
 const Profile: React.FC = () => {
   const { data: session, status } = useSession();
@@ -18,7 +20,9 @@ const Profile: React.FC = () => {
               Authorization: `Bearer ${session.accessToken}`,
             },
           });
-          setPlaylists(response.data.items);
+          const allPlaylists = response.data.items;
+          const randomPlaylists = shuffleArray([...allPlaylists]).slice(0, 4);
+          setPlaylists(randomPlaylists);
         } catch (error) {
           console.error('Error fetching playlists:', error);
         }
@@ -27,6 +31,15 @@ const Profile: React.FC = () => {
 
     fetchPlaylists();
   }, [session]);
+
+  // Shuffle function
+  const shuffleArray = (array: any[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
 
   const user = {
     name: session?.user?.name,
@@ -95,12 +108,9 @@ const Profile: React.FC = () => {
             <button className="flex items-center space-x-2 bg-brand px-4 py-2 text-white rounded-md">
               <span>Share</span>
             </button>
-            <button className="flex items-center space-x-2 bg-customgray text-black px-4 py-2 rounded-md">
-              <span>Profile</span>
-            </button>
-            <button className="flex items-center space-x-2 bg-customgray text-black px-4 py-2 rounded-md">
+            <Link href="/all-playlists" className="flex items-center space-x-2 bg-customgray text-black px-4 py-2 rounded-md">
               <span>Playlists</span>
-            </button>
+            </Link>
             <button className="flex items-center space-x-2 bg-customgray text-black px-4 py-2 rounded-md">
               <span>Messages</span>
             </button>
@@ -158,8 +168,13 @@ const Profile: React.FC = () => {
                 </form>
               </div>
             </div>
-            <div className=" bg-gray-300  p-6 rounded-lg">
-              <h3 className="text-x font-bold mb-2">Shared Playlists</h3>
+            <div className="bg-gray-300 p-6 rounded-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold">Shared Playlists</h3>
+                <Link href="/all-playlists" className="text-blue-600 hover:underline">
+                  View All
+                </Link>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 {playlists.map((playlist) => (
                   <a key={playlist.id} href={playlist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="relative group">
