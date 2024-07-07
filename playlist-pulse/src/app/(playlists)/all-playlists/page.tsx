@@ -6,16 +6,26 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 
+interface Playlist {
+  id: string;
+  name: string;
+  images: { url: string }[];
+  external_urls: { spotify: string };
+}
+
 export default function AllPlaylists() {
   const { data: session, status } = useSession();
-  const [playlists, setPlaylists] = useState<any[]>([]);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchAllPlaylists = async () => {
       if (session?.accessToken) {
         try {
-          const response = await axios.get('https://api.spotify.com/v1/me/playlists', {
+          setIsLoading(true);
+          const response = await axios.get<{ items: Playlist[] }>('https://api.spotify.com/v1/me/playlists', {
             headers: {
               Authorization: `Bearer ${session.accessToken}`,
             },
@@ -23,6 +33,9 @@ export default function AllPlaylists() {
           setPlaylists(response.data.items);
         } catch (error) {
           console.error('Error fetching playlists:', error);
+          setError('Failed to fetch playlists. Please try again later.');
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -33,6 +46,14 @@ export default function AllPlaylists() {
   const filteredPlaylists = playlists.filter(playlist =>
     playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (status === 'loading' || isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-11 my-14">
