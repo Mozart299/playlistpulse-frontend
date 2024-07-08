@@ -111,7 +111,7 @@ const HomeContent: React.FC = () => {
     return (
         <>
             {/*Main content*/}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 px-10 ">
                 <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
                     <form onSubmit={handlePostSubmit}>
                         {/* Your form content */}
