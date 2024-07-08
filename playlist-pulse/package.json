@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.2",
+    "@heroicons/react": "^2.1.4",
     "@types/mongodb": "^4.0.7",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "emoji-picker-react": "^4.11.1",
+    "formidable": "^3.5.1",
     "mongodb": "^6.8.0",
     "next": "14.2.4",
     "next-auth": "^4.24.7",
@@ -20,6 +23,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -9,6 +9,7 @@ import AllPlaylists from '@/app/(playlists)/all-playlists/page';
 import PostItem from '@/app/components/PostItem';
 import EmojiPicker from 'emoji-picker-react';
 
+
 const Profile: React.FC = () => {
   const { data: session, status } = useSession();
   const [playlists, setPlaylists] = useState<any[]>([]);
@@ -19,12 +20,18 @@ const Profile: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
 
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const filesArray = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
+      const uploadedUrls = await Promise.all(
+        Array.from(e.target.files).map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await fetch('/api/upload', { method: 'POST', body: formData });
+          const data = await response.json();
+          return data.url; // The URL of the uploaded image
+        })
       );
-      setPostImages((prevImages) => [...prevImages, ...filesArray]);
+      setPostImages((prevImages) => [...prevImages, ...uploadedUrls]);
     }
   };
 
@@ -98,6 +105,7 @@ const Profile: React.FC = () => {
     async function fetchPosts() {
       const response = await axios.get('/api/posts');
       setPosts(response.data);
+      console.log('Fetched posts:', response.data);
     }
 
     fetchPosts();

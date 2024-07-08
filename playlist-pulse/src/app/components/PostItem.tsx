@@ -1,9 +1,35 @@
-import { useRelativeTime } from "../utils/useRelativeTime";
-import Image from "next/image";
+import React from 'react';
+import Image from 'next/image';
+import { useRelativeTime } from '../utils/useRelativeTime';
+
+interface Post {
+    _id: string;
+    user: string;
+    content: string;
+    created_at: string;
+    images?: string[] | null;
+    playlist?: {
+        id: string;
+        name: string;
+        images: { url: string }[];
+        external_urls: { spotify: string };
+    };
+}
+
+interface PostItemProps {
+    post: Post;
+    userImage: string;
+}
+
+const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
+    console.log('Post in PostItem:', post);
+    console.log('Images in PostItem:', post.images);
 
 
-const PostItem: React.FC<{ post: any, userImage: string }> = ({ post, userImage }) => {
     const relativeTime = useRelativeTime(post.created_at);
+
+    // Ensure images is an array or default to an empty array
+    const images = Array.isArray(post.images) ? post.images : [];
 
     return (
         <div className="bg-customgray p-4 mb-4 shadow-md rounded-lg">
@@ -16,9 +42,20 @@ const PostItem: React.FC<{ post: any, userImage: string }> = ({ post, userImage 
             </div>
             <p className="text-gray-700 mb-4">{post.content}</p>
             <div className="grid grid-cols-3 gap-2 mb-4">
-                {post.images.map((image: any, index: number) => (
+                {images.map((image: string, index: number) => (
                     <Image key={index} src={image} alt={`Photo ${index + 1}`} width={150} height={150} className="rounded-lg" />
                 ))}
+                {post.playlist && post.playlist.images[0]?.url && (
+                    <div className="bg-gray-200 flex items-center justify-center rounded-lg">
+                        <Image
+                            src={post.playlist.images[0].url}
+                            alt={post.playlist.name}
+                            width={150}
+                            height={150}
+                            className="rounded-lg"
+                        />
+                    </div>
+                )}
             </div>
             <div className="flex justify-between items-center mt-4">
                 <button className="flex items-center space-x-1 text-gray-600">
