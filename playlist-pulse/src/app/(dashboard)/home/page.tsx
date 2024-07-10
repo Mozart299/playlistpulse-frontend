@@ -6,7 +6,7 @@ import RightSideBar from "../../components/RightSideBar";
 import SessionWrapper from "../../components/SessionWrapper";
 import HomeContent from "../../components/HomeContent";
 import { useSession } from "next-auth/react";
-import SideBar from "@/app/components/SideBar";
+import Sidebar from "@/app/components/SideBar";
 
 const Home: React.FC = () => {
 
@@ -14,7 +14,7 @@ const Home: React.FC = () => {
     <SessionWrapper>
       <div className="flex min-h-screen">
         <TopBar />
-        <SideBar />
+        <Sidebar />
         <div className="flex overflow-hidden pt-20 pl-56">
           <HomeContent />
           <RightSideBar />
