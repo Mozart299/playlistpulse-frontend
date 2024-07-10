@@ -2,11 +2,11 @@
 
 import React from "react";
 import TopBar from "../../components/TopBar";
-import SideBar from "../../components/SideBar";
 import RightSideBar from "../../components/RightSideBar";
 import SessionWrapper from "../../components/SessionWrapper";
 import HomeContent from "../../components/HomeContent";
 import { useSession } from "next-auth/react";
+import SideBar from "@/app/components/SideBar";
 
 const Home: React.FC = () => {
 
