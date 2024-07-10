@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import EmojiPicker from 'emoji-picker-react';
 import axios from 'axios';
-import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { useRelativeTime } from "../utils/useRelativeTime";
 import PostItem from "./PostItem";
 
 
