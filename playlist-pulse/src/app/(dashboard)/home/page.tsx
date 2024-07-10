@@ -5,8 +5,7 @@ import TopBar from "../../components/TopBar";
 import RightSideBar from "../../components/RightSideBar";
 import SessionWrapper from "../../components/SessionWrapper";
 import HomeContent from "../../components/HomeContent";
-import { useSession } from "next-auth/react";
-import Sidebar from "@/app/components/SideBar";
+import Sidebar from "@/app/components/Sidebar";
 
 const Home: React.FC = () => {
 
