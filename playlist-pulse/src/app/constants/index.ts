@@ -31,7 +31,7 @@ export const sidebarLinks = [
     },
     {
         imgURL: "/assets/signout.png",
-        route: "/logout",
+        route: "/",
         label: "Sign Out"
     }
 

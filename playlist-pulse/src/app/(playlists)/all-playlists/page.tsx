@@ -70,6 +70,7 @@ export default function AllPlaylists() {
 
       try {
         await axios.post('/api/posts', {
+          created_at: new Date().toISOString(),
           content: postContent,
           playlistId: selectedPlaylist.id,
           playlistName: selectedPlaylist.name,
@@ -79,10 +80,9 @@ export default function AllPlaylists() {
         setIsShareModalOpen(false);
         setPostContent('');
         setSelectedPlaylist(null);
-        // Optionally, show a success message
+
       } catch (error) {
         console.error('Error sharing playlist:', error);
-        // Optionally, show an error message
       }
     };
 

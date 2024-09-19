@@ -8,12 +8,12 @@ interface Post {
     content: string;
     created_at: string;
     images?: string[] | null;
-    playlist?: {
-        id: string;
-        name: string;
-        images: { url: string }[];
-        external_urls: { spotify: string };
-    };
+    playlistId?: string;
+    playlistName?: string;
+    playlistImage?: string;
+    playlistUrl?: string;
+    user_email: string;
+
 }
 
 interface PostItemProps {
@@ -45,15 +45,19 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
                 {images.map((image: string, index: number) => (
                     <Image key={index} src={image} alt={`Photo ${index + 1}`} width={150} height={150} className="rounded-lg" />
                 ))}
-                {post.playlist && post.playlist.images[0]?.url && (
-                    <div className="bg-gray-200 flex items-center justify-center rounded-lg">
-                        <Image
-                            src={post.playlist.images[0].url}
-                            alt={post.playlist.name}
-                            width={150}
-                            height={150}
-                            className="rounded-lg"
-                        />
+
+                {post.playlistImage && (
+                    <div className="mb-4">
+                        <p className="font-semibold mb-2">{post.playlistName}</p>
+                        <a href={post.playlistUrl} target="_blank" rel="noopener noreferrer">
+                            <img
+                                src={post.playlistImage}
+                                alt={post.playlistName || 'Playlist'}
+                                width={150}
+                                height={150}
+                                className="rounded-lg"
+                            />
+                        </a>
                     </div>
                 )}
             </div>

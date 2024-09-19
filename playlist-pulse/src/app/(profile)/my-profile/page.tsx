@@ -96,7 +96,7 @@ const Profile: React.FC = () => {
       alert('Post submitted successfully!');
     } catch (error) {
       console.error('Error submitting post:', error);
-      // Optionally, show an error message to the user
+
       alert('Failed to submit post. Please try again.');
     }
   };
