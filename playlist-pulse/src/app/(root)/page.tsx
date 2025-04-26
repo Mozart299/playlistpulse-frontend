@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Menu, X } from 'lucide-react'
 import LoginModal from './LoginModal'
 
-const WelcomePage: React.FC = () => {
+const WelcomePage = () => {
   const [showModal, setShowModal] = useState(false)
   const router = useRouter()
   
