@@ -1,143 +1,222 @@
 "use client"
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import axios from 'axios';
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import axios from 'axios'
+import Link from 'next/link'
+import TopBar from '@/app/components/TopBar'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from '@/components/ui/textarea'
+import { ArrowLeft, Search, Share2 } from 'lucide-react'
+import PlaylistGrid from '@/app/components/PlaylistGrid' // Import the component we created earlier
 
 interface Playlist {
-  id: string;
-  name: string;
-  images: { url: string }[];
-  external_urls: { spotify: string };
+  id: string
+  name: string
+  images: { url: string }[]
+  external_urls: { spotify: string }
 }
 
 export default function AllPlaylists() {
-  const { data: session, status } = useSession();
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
-  const [postContent, setPostContent] = useState('');
+  const { data: session, status } = useSession()
+  const [playlists, setPlaylists] = useState<Playlist[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
+  const [postContent, setPostContent] = useState('')
 
   useEffect(() => {
     const fetchAllPlaylists = async () => {
       if (session?.accessToken) {
         try {
-          setIsLoading(true);
+          setIsLoading(true)
           const response = await axios.get<{ items: Playlist[] }>('https://api.spotify.com/v1/me/playlists', {
             headers: {
               Authorization: `Bearer ${session.accessToken}`,
             },
-          });
-          setPlaylists(response.data.items);
+          })
+          setPlaylists(response.data.items)
         } catch (error) {
-          console.error('Error fetching playlists:', error);
-          setError('Failed to fetch playlists. Please try again later.');
+          console.error('Error fetching playlists:', error)
+          setError('Failed to fetch playlists. Please try again later.')
         } finally {
-          setIsLoading(false);
+          setIsLoading(false)
         }
       }
-    };
+    }
 
-    fetchAllPlaylists();
-  }, [session]);
+    fetchAllPlaylists()
+  }, [session])
 
   const filteredPlaylists = playlists.filter(playlist =>
     playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  )
+
+  const handleShare = (playlist: Playlist) => {
+    setSelectedPlaylist(playlist)
+    setIsShareModalOpen(true)
+  }
+
+  const handlePostSubmit = async () => {
+    if (!selectedPlaylist) return
+
+    try {
+      await axios.post('/api/posts', {
+        created_at: new Date().toISOString(),
+        content: postContent,
+        playlistId: selectedPlaylist.id,
+        playlistName: selectedPlaylist.name,
+        playlistImage: selectedPlaylist.images[0]?.url,
+        playlistUrl: selectedPlaylist.external_urls.spotify,
+      })
+      setIsShareModalOpen(false)
+      setPostContent('')
+      setSelectedPlaylist(null)
+      
+      // Show success notification or feedback
+    } catch (error) {
+      console.error('Error sharing playlist:', error)
+      // Show error notification
+    }
+  }
 
   if (status === 'loading' || isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600">Loading your playlists...</p>
+        </div>
+      </div>
+    )
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md text-center">
+          <div className="text-red-500 mb-4 text-5xl">!</div>
+          <h2 className="text-xl font-semibold mb-2">Error Loading Playlists</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    )
   }
 
-
-    const handleShare = (playlist: Playlist) => {
-      setSelectedPlaylist(playlist);
-      setIsShareModalOpen(true);
-    };
-
-    const handlePostSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!selectedPlaylist) return;
-
-      try {
-        await axios.post('/api/posts', {
-          created_at: new Date().toISOString(),
-          content: postContent,
-          playlistId: selectedPlaylist.id,
-          playlistName: selectedPlaylist.name,
-          playlistImage: selectedPlaylist.images[0]?.url,
-          playlistUrl: selectedPlaylist.external_urls.spotify,
-        });
-        setIsShareModalOpen(false);
-        setPostContent('');
-        setSelectedPlaylist(null);
-
-      } catch (error) {
-        console.error('Error sharing playlist:', error);
-      }
-    };
-
-    return (
-      <div className="container mx-auto px-4 py-11 my-14">
-        <Link href="/my-profile" className="text-blue-600 hover:underline mb-4 inline-block">
-          &larr; Back to Profile
-        </Link>
-        <h1 className="text-3xl font-bold mb-6">Your Playlists</h1>
-        <input
-          type="text"
-          placeholder="Search playlists..."
-          className="w-full p-2 mb-4 border rounded"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredPlaylists.map((playlist) => (
-            <div key={playlist.id} className="relative group">
-              <a href={playlist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="block">
-                <div className="w-full h-48 rounded-lg overflow-hidden">
-                  <Image src={playlist.images[0]?.url || '/default-playlist.png'} alt={playlist.name} layout="fill" objectFit="cover" className="rounded-lg" />
-                </div>
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
-                  <span className="text-white text-center p-2">{playlist.name}</span>
-                </div>
-              </a>
-              <button 
-                onClick={() => handleShare(playlist)} 
-                className="absolute bottom-2 right-2 bg-brand text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              >
-                Share
-              </button>
-            </div>
-          ))}
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <TopBar />
+      
+      <div className="container mx-auto px-4 pt-24 pb-10">
+        <div className="flex items-center mb-6">
+          <Link href="/my-profile" className="mr-4">
+            <Button variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold">Your Playlists</h1>
         </div>
-    
-        {isShareModalOpen && selectedPlaylist && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-4 rounded-lg w-96">
-              <h2 className="text-xl font-bold mb-4">Share {selectedPlaylist.name}</h2>
-              <form onSubmit={handlePostSubmit}>
-                <textarea
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  placeholder="Write something about this playlist..."
-                  className="w-full h-32 p-2 border rounded mb-4"
-                />
-                <div className="flex justify-end">
-                  <button type="button" onClick={() => setIsShareModalOpen(false)} className="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
-                  <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Share</button>
-                </div>
-              </form>
-            </div>
+        
+        <div className="mb-6 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Input
+            type="text"
+            placeholder="Search playlists..."
+            className="pl-10 w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        {filteredPlaylists.length > 0 ? (
+          <PlaylistGrid 
+            playlists={filteredPlaylists} 
+            onShare={handleShare}
+            showShareButton={true}
+          />
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-gray-500 mb-4">No playlists found</p>
+            {searchTerm ? (
+              <Button variant="outline" onClick={() => setSearchTerm('')}>
+                Clear Search
+              </Button>
+            ) : (
+              <a href="https://open.spotify.com/create-playlist" target="_blank" rel="noopener noreferrer">
+                <Button>Create a Playlist on Spotify</Button>
+              </a>
+            )}
           </div>
         )}
       </div>
-    );
-  }
+      
+      {/* Share Playlist Modal */}
+      <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share Playlist</DialogTitle>
+            <DialogDescription>
+              Share {selectedPlaylist?.name} with your connections
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedPlaylist && (
+            <div className="flex items-start space-x-4 py-4">
+              <div className="w-20 h-20 relative flex-shrink-0">
+                <img 
+                  src={selectedPlaylist.images[0]?.url || '/default-playlist.png'} 
+                  alt={selectedPlaylist.name}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              </div>
+              <div>
+                <h3 className="font-medium">{selectedPlaylist.name}</h3>
+                <a 
+                  href={selectedPlaylist.external_urls.spotify} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  View on Spotify
+                </a>
+              </div>
+            </div>
+          )}
+          
+          <Textarea
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+            placeholder="Write something about this playlist..."
+            className="min-h-[100px]"
+          />
+          
+          <DialogFooter className="sm:justify-between">
+            <Button variant="outline" onClick={() => setIsShareModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handlePostSubmit} 
+              className="bg-brand hover:bg-brand/90"
+              disabled={!postContent.trim()}
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Share
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
