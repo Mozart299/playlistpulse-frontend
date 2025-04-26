@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,12 +15,21 @@ import EmojiPicker from 'emoji-picker-react'
 import PlaylistSelectorModal from './PlaylistSelectorModal'
 import SharePlaylistModal from './SharePlaylistModal'
 import useSpotifyToken from '../utils/useSpotifytoken'
+import axios from 'axios'
+import debounce from 'lodash.debounce'
 
 interface Playlist {
   id: string;
   name: string;
   images: { url: string }[];
   external_urls: { spotify: string };
+}
+
+interface NominatimResult {
+  place_id: string;
+  display_name: string;
+  lat: string;
+  lon: string;
 }
 
 interface CreatePostProps {
@@ -33,7 +42,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   const [postContent, setPostContent] = useState('')
   const [postImages, setPostImages] = useState<string[]>([])
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [location, setLocation] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   // Playlist related states
@@ -41,8 +49,73 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
   const [showPlaylistShareModal, setShowPlaylistShareModal] = useState(false)
   
+  // Link input state
+  const [showLinkInput, setShowLinkInput] = useState(false)
+  const [linkInput, setLinkInput] = useState('')
+  
+  // Location input state
+  const [showLocationInput, setShowLocationInput] = useState(false)
+  const [locationInput, setLocationInput] = useState('')
+  const [locationSuggestions, setLocationSuggestions] = useState<NominatimResult[]>([])
+  const [selectedLocation, setSelectedLocation] = useState<NominatimResult | null>(null)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  
   // Get Spotify token
   const { accessToken, error: tokenError } = useSpotifyToken()
+
+  // Ref for location input
+  const locationInputRef = useRef<HTMLInputElement>(null)
+
+  // Debounced fetch for location suggestions
+  const fetchLocationSuggestions = debounce(async (query: string) => {
+    if (query.length < 3) {
+      setLocationSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+    
+    try {
+      const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        params: {
+          q: query,
+          format: 'json',
+          addressdetails: 1,
+          limit: 5,
+        },
+        headers: {
+          'User-Agent': 'YourAppName/1.0 (your.email@example.com)', // Replace with your app name and email
+        },
+      })
+      setLocationSuggestions(response.data)
+      setShowSuggestions(true)
+    } catch (error) {
+      console.error('Error fetching location suggestions:', error)
+      setLocationSuggestions([])
+      setShowSuggestions(false)
+    }
+  }, 300)
+
+  // Handle location input change
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setLocationInput(value)
+    fetchLocationSuggestions(value)
+  }
+
+  // Handle suggestion selection
+  const handleSuggestionSelect = (suggestion: NominatimResult) => {
+    setSelectedLocation(suggestion)
+    setLocationInput(suggestion.display_name)
+    setShowSuggestions(false)
+  }
+
+  // Handle keyboard navigation for suggestions
+  const handleSuggestionKeyDown = (e: React.KeyboardEvent, suggestion: NominatimResult) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleSuggestionSelect(suggestion)
+    }
+  }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -58,17 +131,26 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   }
 
   const handleLinkInsert = () => {
-    const url = prompt("Enter a URL:")
-    if (url) {
-      setPostContent((prevContent) => prevContent + ' ' + url)
+    const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/;
+    if (urlPattern.test(linkInput)) {
+      setPostContent((prevContent) => prevContent + ' ' + linkInput)
+      setLinkInput('')
+      setShowLinkInput(false)
+    } else {
+      alert('Please enter a valid URL (e.g., https://example.com)')
     }
   }
 
   const handleLocationInsert = () => {
-    const newLocation = prompt("Enter your location:")
-    if (newLocation) {
-      setLocation(newLocation)
-      setPostContent((prevContent) => prevContent + ' 📍 ' + newLocation)
+    if (selectedLocation && selectedLocation.display_name) {
+      setPostContent((prevContent) => prevContent + ' 📍 ' + selectedLocation.display_name)
+      setLocationInput('')
+      setSelectedLocation(null)
+      setLocationSuggestions([])
+      setShowSuggestions(false)
+      setShowLocationInput(false)
+    } else {
+      alert('Please select a valid location from the suggestions')
     }
   }
 
@@ -103,8 +185,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       const post = {
         content: postContent,
         images: postImages,
-        location: location,
         created_at: new Date().toISOString(),
+        location: selectedLocation ? {
+          address: selectedLocation.display_name,
+          latitude: parseFloat(selectedLocation.lat),
+          longitude: parseFloat(selectedLocation.lon),
+        } : null,
       }
       
       await onPostSubmit(post)
@@ -112,9 +198,16 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       // Reset form
       setPostContent('')
       setPostImages([])
-      setLocation('')
+      setShowLinkInput(false)
+      setLinkInput('')
+      setShowLocationInput(false)
+      setLocationInput('')
+      setSelectedLocation(null)
+      setLocationSuggestions([])
+      setShowSuggestions(false)
     } catch (error) {
       console.error('Error submitting post:', error)
+      alert('Failed to submit post. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -125,10 +218,21 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   }
 
   const handlePlaylistShareSuccess = () => {
-    // Do anything needed after successful playlist share
-    // For example, show a toast notification
     console.log('Playlist shared successfully')
   }
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (locationInputRef.current && !locationInputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <>
@@ -167,6 +271,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                       className="absolute top-1 right-1 h-6 w-6 rounded-full"
                       type="button"
                       onClick={() => handleRemoveImage(index)}
+                      aria-label={`Remove image ${index + 1}`}
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -178,6 +283,99 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             {showEmojiPicker && (
               <div className="absolute z-10 mt-2">
                 <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+            
+            {showLinkInput && (
+              <div className="mt-2 flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={linkInput}
+                  onChange={(e) => setLinkInput(e.target.value)}
+                  placeholder="Enter a URL (e.g., https://example.com)"
+                  className="flex-1 border rounded p-2 text-sm"
+                  aria-label="Enter URL"
+                />
+                <Button
+                  type="button"
+                  onClick={handleLinkInsert}
+                  size="sm"
+                  aria-label="Add URL"
+                >
+                  Add
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setLinkInput('')
+                    setShowLinkInput(false)
+                  }}
+                  size="sm"
+                  aria-label="Cancel URL input"
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+            
+            {showLocationInput && (
+              <div className="mt-2 relative" ref={locationInputRef}>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={locationInput}
+                    onChange={handleLocationInputChange}
+                    placeholder="Search for a location (e.g., New York, NY)"
+                    className="flex-1 border rounded p-2 text-sm"
+                    aria-label="Search for a location"
+                    autoComplete="off"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleLocationInsert}
+                    size="sm"
+                    aria-label="Add location"
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setLocationInput('')
+                      setSelectedLocation(null)
+                      setLocationSuggestions([])
+                      setShowSuggestions(false)
+                      setShowLocationInput(false)
+                    }}
+                    size="sm"
+                    aria-label="Cancel location input"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                {showSuggestions && locationSuggestions.length > 0 && (
+                  <ul
+                    className="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-60 overflow-auto"
+                    role="listbox"
+                    aria-label="Location suggestions"
+                  >
+                    {locationSuggestions.map((suggestion) => (
+                      <li
+                        key={suggestion.place_id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                        onKeyDown={(e) => handleSuggestionKeyDown(e, suggestion)}
+                        role="option"
+                        tabIndex={0}
+                        aria-selected={selectedLocation?.place_id === suggestion.place_id}
+                      >
+                        {suggestion.display_name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </CardContent>
@@ -198,6 +396,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                   size="sm"
                   className="text-gray-600"
                   type="button"
+                  aria-label="Upload photo"
                 >
                   <ImageIcon className="h-4 w-4 mr-1" />
                   <span className="hidden sm:inline">Photo</span>
@@ -209,7 +408,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 size="sm"
                 className="text-gray-600"
                 type="button"
-                onClick={handleLinkInsert}
+                onClick={() => setShowLinkInput(true)}
+                aria-label="Insert link"
               >
                 <LinkIcon className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Link</span>
@@ -220,7 +420,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 size="sm"
                 className="text-gray-600"
                 type="button"
-                onClick={handleLocationInsert}
+                onClick={() => setShowLocationInput(true)}
+                aria-label="Insert location"
               >
                 <MapPin className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Location</span>
@@ -232,6 +433,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 className="text-gray-600"
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                aria-label="Toggle emoji picker"
+                aria-expanded={showEmojiPicker}
               >
                 <Smile className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Emoji</span>
@@ -243,6 +446,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 className="text-gray-600"
                 type="button"
                 onClick={handlePlaylistButtonClick}
+                aria-label="Share playlist"
               >
                 <Music className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Playlist</span>
@@ -260,14 +464,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
         </form>
       </Card>
       
-      {/* Playlist Selection Modal */}
       <PlaylistSelectorModal
         isOpen={showPlaylistSelector}
         onClose={() => setShowPlaylistSelector(false)}
         onSelectPlaylist={handleSelectPlaylist}
       />
       
-      {/* Playlist Sharing Modal */}
       <SharePlaylistModal
         isOpen={showPlaylistShareModal}
         onClose={() => setShowPlaylistShareModal(false)}
