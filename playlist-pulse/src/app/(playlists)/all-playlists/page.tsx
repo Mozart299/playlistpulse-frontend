@@ -7,17 +7,9 @@ import Link from 'next/link'
 import TopBar from '@/app/components/TopBar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Textarea } from '@/components/ui/textarea'
-import { ArrowLeft, Search, Share2 } from 'lucide-react'
-import PlaylistGrid from '@/app/components/PlaylistGrid' // Import the component we created earlier
+import { ArrowLeft, Search } from 'lucide-react'
+import PlaylistGrid from '@/app/components/PlaylistGrid' 
+import SharePlaylistModal from '@/app/components/SharePlaylistModal'
 
 interface Playlist {
   id: string
@@ -34,7 +26,6 @@ export default function AllPlaylists() {
   const [error, setError] = useState('')
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
-  const [postContent, setPostContent] = useState('')
 
   useEffect(() => {
     const fetchAllPlaylists = async () => {
@@ -68,27 +59,9 @@ export default function AllPlaylists() {
     setIsShareModalOpen(true)
   }
 
-  const handlePostSubmit = async () => {
-    if (!selectedPlaylist) return
-
-    try {
-      await axios.post('/api/posts', {
-        created_at: new Date().toISOString(),
-        content: postContent,
-        playlistId: selectedPlaylist.id,
-        playlistName: selectedPlaylist.name,
-        playlistImage: selectedPlaylist.images[0]?.url,
-        playlistUrl: selectedPlaylist.external_urls.spotify,
-      })
-      setIsShareModalOpen(false)
-      setPostContent('')
-      setSelectedPlaylist(null)
-      
-      // Show success notification or feedback
-    } catch (error) {
-      console.error('Error sharing playlist:', error)
-      // Show error notification
-    }
+  const handleShareSuccess = () => {
+    // Show success message or notification
+    console.log('Playlist shared successfully!')
   }
 
   if (status === 'loading' || isLoading) {
@@ -163,60 +136,12 @@ export default function AllPlaylists() {
       </div>
       
       {/* Share Playlist Modal */}
-      <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Share Playlist</DialogTitle>
-            <DialogDescription>
-              Share {selectedPlaylist?.name} with your connections
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedPlaylist && (
-            <div className="flex items-start space-x-4 py-4">
-              <div className="w-20 h-20 relative flex-shrink-0">
-                <img 
-                  src={selectedPlaylist.images[0]?.url || '/default-playlist.png'} 
-                  alt={selectedPlaylist.name}
-                  className="w-full h-full object-cover rounded-md"
-                />
-              </div>
-              <div>
-                <h3 className="font-medium">{selectedPlaylist.name}</h3>
-                <a 
-                  href={selectedPlaylist.external_urls.spotify} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  View on Spotify
-                </a>
-              </div>
-            </div>
-          )}
-          
-          <Textarea
-            value={postContent}
-            onChange={(e) => setPostContent(e.target.value)}
-            placeholder="Write something about this playlist..."
-            className="min-h-[100px]"
-          />
-          
-          <DialogFooter className="sm:justify-between">
-            <Button variant="outline" onClick={() => setIsShareModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handlePostSubmit} 
-              className="bg-brand hover:bg-brand/90"
-              disabled={!postContent.trim()}
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SharePlaylistModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        playlist={selectedPlaylist}
+        onShareSuccess={handleShareSuccess}
+      />
     </div>
   )
 }
