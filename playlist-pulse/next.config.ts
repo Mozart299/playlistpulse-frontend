@@ -8,16 +8,9 @@ import type { NextConfig } from "next";
           protocol: 'https',
           hostname: '**',
         },
-  
-  
       ],
-      domains: ["http://localhost:3000"],
     },
-      reactStrictMode: true, // Enables strict mode for highlighting potential problems in the app
-    allowedDevOrigins: [
-      "http://localhost:3000",
-      "http://localhost:8000",
-    ]
+      reactStrictMode: true,
   };
   
   export default nextConfig;
