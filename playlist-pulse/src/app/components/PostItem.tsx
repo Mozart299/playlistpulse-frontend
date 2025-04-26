@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ThumbsUp, MessageSquare, Share2 } from 'lucide-react'
-import Image from 'next/image'
 
 interface Post {
   _id: string
@@ -31,10 +30,10 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
   const images = Array.isArray(post.images) ? post.images : []
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 overflow-hidden">
       <CardHeader className="pb-2">
         <div className="flex items-center">
-          <Avatar className="h-10 w-10 mr-3">
+          <Avatar className="h-10 w-10 mr-3 border">
             <AvatarImage src={userImage} alt={post.user} />
             <AvatarFallback>
               {post.user.substring(0, 2).toUpperCase()}
@@ -54,34 +53,34 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
             {images.map((image: string, index: number) => (
               <div key={index} className="relative aspect-square rounded-md overflow-hidden">
-                <Image 
-                  src={image} 
-                  alt={`Photo ${index + 1}`} 
-                  layout="fill" 
-                  objectFit="cover" 
-                  className="rounded-md" 
-                />
+                <div className="w-full h-full">
+                  <img 
+                    src={image} 
+                    alt={`Photo ${index + 1}`}
+                    className="w-full h-full object-cover rounded-md" 
+                  />
+                </div>
               </div>
             ))}
           </div>
         )}
         
         {post.playlistImage && (
-          <div className="mb-4">
+          <div className="mb-4 bg-gray-50 p-4 rounded-lg">
             <p className="font-semibold mb-2">{post.playlistName}</p>
             <a 
               href={post.playlistUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="block w-48 h-48 relative"
+              className="block w-48 h-48 relative hover:opacity-90 transition-opacity"
             >
-              <Image
-                src={post.playlistImage}
-                alt={post.playlistName || 'Playlist'}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-md"
-              />
+              <div className="w-full h-full">
+                <img
+                  src={post.playlistImage}
+                  alt={post.playlistName || 'Playlist'}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              </div>
             </a>
           </div>
         )}

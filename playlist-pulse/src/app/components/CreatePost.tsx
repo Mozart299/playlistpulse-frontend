@@ -11,7 +11,6 @@ import {
   X,
 } from 'lucide-react'
 import EmojiPicker from 'emoji-picker-react'
-import Image from 'next/image'
 
 interface CreatePostProps {
   userImage: string
@@ -96,7 +95,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       <form onSubmit={handleSubmit}>
         <CardContent className="pt-6">
           <div className="flex items-start space-x-3">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 border">
               <AvatarImage src={userImage} alt={userName} />
               <AvatarFallback>
                 {userName?.substring(0, 2).toUpperCase()}
@@ -107,7 +106,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
               placeholder={`What's on your mind, ${userName?.split(' ')[0]}?`}
-              className="flex-1 resize-none"
+              className="flex-1 resize-none focus-visible:ring-2"
               rows={3}
             />
           </div>
@@ -116,11 +115,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             <div className="grid grid-cols-3 gap-2 mt-4">
               {postImages.map((image, index) => (
                 <div key={index} className="relative rounded-md overflow-hidden aspect-square">
-                  <Image
+                  <img
                     src={image}
                     alt={`Post image ${index + 1}`}
-                    layout="fill"
-                    objectFit="cover"
+                    className="w-full h-full object-cover"
                   />
                   <Button
                     variant="destructive"
