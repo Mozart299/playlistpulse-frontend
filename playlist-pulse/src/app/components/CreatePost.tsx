@@ -33,13 +33,20 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   const [postContent, setPostContent] = useState('')
   const [postImages, setPostImages] = useState<string[]>([])
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [location, setLocation] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   // Playlist related states
   const [showPlaylistSelector, setShowPlaylistSelector] = useState(false)
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
   const [showPlaylistShareModal, setShowPlaylistShareModal] = useState(false)
+  
+  // Link input state
+  const [showLinkInput, setShowLinkInput] = useState(false)
+  const [linkInput, setLinkInput] = useState('')
+  
+  // Location input state
+  const [showLocationInput, setShowLocationInput] = useState(false)
+  const [locationInput, setLocationInput] = useState('')
   
   // Get Spotify token
   const { accessToken, error: tokenError } = useSpotifyToken()
@@ -58,17 +65,24 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   }
 
   const handleLinkInsert = () => {
-    const url = prompt("Enter a URL:")
-    if (url) {
-      setPostContent((prevContent) => prevContent + ' ' + url)
+    // Validate URL
+    const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/;
+    if (urlPattern.test(linkInput)) {
+      setPostContent((prevContent) => prevContent + ' ' + linkInput)
+      setLinkInput('')
+      setShowLinkInput(false)
+    } else {
+      alert('Please enter a valid URL (e.g., https://example.com)')
     }
   }
 
   const handleLocationInsert = () => {
-    const newLocation = prompt("Enter your location:")
-    if (newLocation) {
-      setLocation(newLocation)
-      setPostContent((prevContent) => prevContent + ' 📍 ' + newLocation)
+    if (locationInput.trim()) {
+      setPostContent((prevContent) => prevContent + ' 📍 ' + locationInput.trim())
+      setLocationInput('')
+      setShowLocationInput(false)
+    } else {
+      alert('Please enter a valid location')
     }
   }
 
@@ -103,7 +117,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       const post = {
         content: postContent,
         images: postImages,
-        location: location,
         created_at: new Date().toISOString(),
       }
       
@@ -112,9 +125,13 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       // Reset form
       setPostContent('')
       setPostImages([])
-      setLocation('')
+      setShowLinkInput(false)
+      setLinkInput('')
+      setShowLocationInput(false)
+      setLocationInput('')
     } catch (error) {
       console.error('Error submitting post:', error)
+      alert('Failed to submit post. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -125,8 +142,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   }
 
   const handlePlaylistShareSuccess = () => {
-    // Do anything needed after successful playlist share
-    // For example, show a toast notification
     console.log('Playlist shared successfully')
   }
 
@@ -167,6 +182,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                       className="absolute top-1 right-1 h-6 w-6 rounded-full"
                       type="button"
                       onClick={() => handleRemoveImage(index)}
+                      aria-label={`Remove image ${index + 1}`}
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -178,6 +194,72 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             {showEmojiPicker && (
               <div className="absolute z-10 mt-2">
                 <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+            
+            {showLinkInput && (
+              <div className="mt-2 flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={linkInput}
+                  onChange={(e) => setLinkInput(e.target.value)}
+                  placeholder="Enter a URL (e.g., https://example.com)"
+                  className="flex-1 border rounded p-2 text-sm"
+                  aria-label="Enter URL"
+                />
+                <Button
+                  type="button"
+                  onClick={handleLinkInsert}
+                  size="sm"
+                  aria-label="Add URL"
+                >
+                  Add
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setLinkInput('')
+                    setShowLinkInput(false)
+                  }}
+                  size="sm"
+                  aria-label="Cancel URL input"
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+            
+            {showLocationInput && (
+              <div className="mt-2 flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={locationInput}
+                  onChange={(e) => setLocationInput(e.target.value)}
+                  placeholder="Enter your location (e.g., New York, NY)"
+                  className="flex-1 border rounded p-2 text-sm"
+                  aria-label="Enter location"
+                />
+                <Button
+                  type="button"
+                  onClick={handleLocationInsert}
+                  size="sm"
+                  aria-label="Add location"
+                >
+                  Add
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setLocationInput('')
+                    setShowLocationInput(false)
+                  }}
+                  size="sm"
+                  aria-label="Cancel location input"
+                >
+                  Cancel
+                </Button>
               </div>
             )}
           </CardContent>
@@ -198,6 +280,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                   size="sm"
                   className="text-gray-600"
                   type="button"
+                  aria-label="Upload photo"
                 >
                   <ImageIcon className="h-4 w-4 mr-1" />
                   <span className="hidden sm:inline">Photo</span>
@@ -209,7 +292,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 size="sm"
                 className="text-gray-600"
                 type="button"
-                onClick={handleLinkInsert}
+                onClick={() => setShowLinkInput(true)}
+                aria-label="Insert link"
               >
                 <LinkIcon className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Link</span>
@@ -220,7 +304,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 size="sm"
                 className="text-gray-600"
                 type="button"
-                onClick={handleLocationInsert}
+                onClick={() => setShowLocationInput(true)}
+                aria-label="Insert location"
               >
                 <MapPin className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Location</span>
@@ -232,6 +317,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 className="text-gray-600"
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                aria-label="Toggle emoji picker"
+                aria-expanded={showEmojiPicker}
               >
                 <Smile className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Emoji</span>
@@ -243,6 +330,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 className="text-gray-600"
                 type="button"
                 onClick={handlePlaylistButtonClick}
+                aria-label="Share playlist"
               >
                 <Music className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Playlist</span>
@@ -260,14 +348,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
         </form>
       </Card>
       
-      {/* Playlist Selection Modal */}
       <PlaylistSelectorModal
         isOpen={showPlaylistSelector}
         onClose={() => setShowPlaylistSelector(false)}
         onSelectPlaylist={handleSelectPlaylist}
       />
       
-      {/* Playlist Sharing Modal */}
       <SharePlaylistModal
         isOpen={showPlaylistShareModal}
         onClose={() => setShowPlaylistShareModal(false)}
