@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,12 +15,21 @@ import EmojiPicker from 'emoji-picker-react'
 import PlaylistSelectorModal from './PlaylistSelectorModal'
 import SharePlaylistModal from './SharePlaylistModal'
 import useSpotifyToken from '../utils/useSpotifytoken'
+import axios from 'axios'
+import debounce from 'lodash.debounce'
 
 interface Playlist {
   id: string;
   name: string;
   images: { url: string }[];
   external_urls: { spotify: string };
+}
+
+interface NominatimResult {
+  place_id: string;
+  display_name: string;
+  lat: string;
+  lon: string;
 }
 
 interface CreatePostProps {
@@ -47,9 +56,66 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   // Location input state
   const [showLocationInput, setShowLocationInput] = useState(false)
   const [locationInput, setLocationInput] = useState('')
+  const [locationSuggestions, setLocationSuggestions] = useState<NominatimResult[]>([])
+  const [selectedLocation, setSelectedLocation] = useState<NominatimResult | null>(null)
+  const [showSuggestions, setShowSuggestions] = useState(false)
   
   // Get Spotify token
   const { accessToken, error: tokenError } = useSpotifyToken()
+
+  // Ref for location input
+  const locationInputRef = useRef<HTMLInputElement>(null)
+
+  // Debounced fetch for location suggestions
+  const fetchLocationSuggestions = debounce(async (query: string) => {
+    if (query.length < 3) {
+      setLocationSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+    
+    try {
+      const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        params: {
+          q: query,
+          format: 'json',
+          addressdetails: 1,
+          limit: 5,
+        },
+        headers: {
+          'User-Agent': 'YourAppName/1.0 (your.email@example.com)', // Replace with your app name and email
+        },
+      })
+      setLocationSuggestions(response.data)
+      setShowSuggestions(true)
+    } catch (error) {
+      console.error('Error fetching location suggestions:', error)
+      setLocationSuggestions([])
+      setShowSuggestions(false)
+    }
+  }, 300)
+
+  // Handle location input change
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setLocationInput(value)
+    fetchLocationSuggestions(value)
+  }
+
+  // Handle suggestion selection
+  const handleSuggestionSelect = (suggestion: NominatimResult) => {
+    setSelectedLocation(suggestion)
+    setLocationInput(suggestion.display_name)
+    setShowSuggestions(false)
+  }
+
+  // Handle keyboard navigation for suggestions
+  const handleSuggestionKeyDown = (e: React.KeyboardEvent, suggestion: NominatimResult) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleSuggestionSelect(suggestion)
+    }
+  }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -65,7 +131,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   }
 
   const handleLinkInsert = () => {
-    // Validate URL
     const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/;
     if (urlPattern.test(linkInput)) {
       setPostContent((prevContent) => prevContent + ' ' + linkInput)
@@ -77,12 +142,15 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   }
 
   const handleLocationInsert = () => {
-    if (locationInput.trim()) {
-      setPostContent((prevContent) => prevContent + ' 📍 ' + locationInput.trim())
+    if (selectedLocation && selectedLocation.display_name) {
+      setPostContent((prevContent) => prevContent + ' 📍 ' + selectedLocation.display_name)
       setLocationInput('')
+      setSelectedLocation(null)
+      setLocationSuggestions([])
+      setShowSuggestions(false)
       setShowLocationInput(false)
     } else {
-      alert('Please enter a valid location')
+      alert('Please select a valid location from the suggestions')
     }
   }
 
@@ -118,6 +186,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
         content: postContent,
         images: postImages,
         created_at: new Date().toISOString(),
+        location: selectedLocation ? {
+          address: selectedLocation.display_name,
+          latitude: parseFloat(selectedLocation.lat),
+          longitude: parseFloat(selectedLocation.lon),
+        } : null,
       }
       
       await onPostSubmit(post)
@@ -129,6 +202,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       setLinkInput('')
       setShowLocationInput(false)
       setLocationInput('')
+      setSelectedLocation(null)
+      setLocationSuggestions([])
+      setShowSuggestions(false)
     } catch (error) {
       console.error('Error submitting post:', error)
       alert('Failed to submit post. Please try again.')
@@ -144,6 +220,19 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   const handlePlaylistShareSuccess = () => {
     console.log('Playlist shared successfully')
   }
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (locationInputRef.current && !locationInputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <>
@@ -231,35 +320,62 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             )}
             
             {showLocationInput && (
-              <div className="mt-2 flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                  placeholder="Enter your location (e.g., New York, NY)"
-                  className="flex-1 border rounded p-2 text-sm"
-                  aria-label="Enter location"
-                />
-                <Button
-                  type="button"
-                  onClick={handleLocationInsert}
-                  size="sm"
-                  aria-label="Add location"
-                >
-                  Add
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setLocationInput('')
-                    setShowLocationInput(false)
-                  }}
-                  size="sm"
-                  aria-label="Cancel location input"
-                >
-                  Cancel
-                </Button>
+              <div className="mt-2 relative" ref={locationInputRef}>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={locationInput}
+                    onChange={handleLocationInputChange}
+                    placeholder="Search for a location (e.g., New York, NY)"
+                    className="flex-1 border rounded p-2 text-sm"
+                    aria-label="Search for a location"
+                    autoComplete="off"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleLocationInsert}
+                    size="sm"
+                    aria-label="Add location"
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setLocationInput('')
+                      setSelectedLocation(null)
+                      setLocationSuggestions([])
+                      setShowSuggestions(false)
+                      setShowLocationInput(false)
+                    }}
+                    size="sm"
+                    aria-label="Cancel location input"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                {showSuggestions && locationSuggestions.length > 0 && (
+                  <ul
+                    className="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-60 overflow-auto"
+                    role="listbox"
+                    aria-label="Location suggestions"
+                  >
+                    {locationSuggestions.map((suggestion) => (
+                      <li
+                        key={suggestion.place_id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                        onKeyDown={(e) => handleSuggestionKeyDown(e, suggestion)}
+                        role="option"
+                        tabIndex={0}
+                        aria-selected={selectedLocation?.place_id === suggestion.place_id}
+                      >
+                        {suggestion.display_name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </CardContent>
