@@ -43,7 +43,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 user: username,
                 user_email: userEmail,
                 created_at: req.body.created_at || now.toISOString(),
-            };
+                likeCount: 0,
+                commentCount: 0,
+                shareCount: 0
+              };
             
             // Insert the post
             const result = await collection.insertOne(postData);
