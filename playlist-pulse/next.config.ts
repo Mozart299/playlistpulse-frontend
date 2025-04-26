@@ -8,7 +8,9 @@ import type { NextConfig } from "next";
           protocol: 'https',
           hostname: '**',
         },
+  
       ],
+      domains: ["http://localhost:3000"],
     },
       reactStrictMode: true,
   };
