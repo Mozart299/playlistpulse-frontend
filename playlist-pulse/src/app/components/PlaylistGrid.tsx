@@ -79,7 +79,8 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({
                     className="transition-transform duration-300 group-hover:scale-105"
                   />
                   
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity duration-300 flex items-center justify-center">
+                  {/* Hover overlay - only visible on hover */}
+                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-300 flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center p-2">
                       <p className="font-medium">{playlist.name}</p>
                     </div>
