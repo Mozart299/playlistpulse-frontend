@@ -134,10 +134,10 @@ const ProfilePage: React.FC = () => {
           <div className="flex justify-between items-center px-4 mt-6">
             <div className="flex space-x-6">
               <div>
-                <span className="font-bold">124</span> <span className="text-gray-600">Posts</span>
+                <span className="font-bold">{posts.length}</span> <span className="text-gray-600">Posts</span>
               </div>
               <div>
-                <span className="font-bold">1.2K</span> <span className="text-gray-600">Connections</span>
+                <span className="font-bold">0</span> <span className="text-gray-600">Connections</span>
               </div>
               <div>
                 <span className="font-bold">{playlists.length}</span> <span className="text-gray-600">Playlists</span>
@@ -288,52 +288,13 @@ const ProfilePage: React.FC = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Recent Connections</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Image 
-                    src="/images/albumcover1.jpg" 
-                    alt="Connection" 
-                    width={40} 
-                    height={40} 
-                    className="rounded-full"
-                  />
-                  <div>
-                    <p className="font-medium">Lila Thompson</p>
-                    <p className="text-xs text-gray-500">Discovering new beats</p>
-                  </div>
+              <CardContent>
+                <div className="text-center py-4">
+                  <p className="text-gray-500 text-sm mb-2">No connections yet</p>
+                  <Link href="/discover">
+                    <Button variant="outline" size="sm">Find Music Friends</Button>
+                  </Link>
                 </div>
-                <Separator />
-                <div className="flex items-center gap-3">
-                  <Image 
-                    src="/images/albumcover2.jpg" 
-                    alt="Connection" 
-                    width={40} 
-                    height={40} 
-                    className="rounded-full"
-                  />
-                  <div>
-                    <p className="font-medium">Ethan Reynolds</p>
-                    <p className="text-xs text-gray-500">Jamming to favorite tunes</p>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex items-center gap-3">
-                  <Image 
-                    src="/images/albumcover3.jpg" 
-                    alt="Connection" 
-                    width={40} 
-                    height={40} 
-                    className="rounded-full"
-                  />
-                  <div>
-                    <p className="font-medium">Sophie Walker</p>
-                    <p className="text-xs text-gray-500">Creating a new mix</p>
-                  </div>
-                </div>
-                <Separator />
-                <Link href="/connections" className="text-sm text-blue-600 hover:underline block text-center">
-                  View all connections
-                </Link>
               </CardContent>
             </Card>
             
@@ -342,32 +303,13 @@ const ProfilePage: React.FC = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Upcoming Events</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="bg-gray-100 rounded p-2 text-center min-w-[50px]">
-                    <div className="text-xs text-gray-500">JUN</div>
-                    <div className="font-bold">16</div>
-                  </div>
-                  <div>
-                    <p className="font-medium">Music BBQ</p>
-                    <p className="text-xs text-gray-500">Playlist Garden</p>
-                  </div>
+              <CardContent>
+                <div className="text-center py-4">
+                  <p className="text-gray-500 text-sm mb-2">No upcoming events</p>
+                  <Link href="/events">
+                    <Button variant="outline" size="sm">Discover Events</Button>
+                  </Link>
                 </div>
-                <Separator />
-                <div className="flex items-center gap-3">
-                  <div className="bg-gray-100 rounded p-2 text-center min-w-[50px]">
-                    <div className="text-xs text-gray-500">JUL</div>
-                    <div className="font-bold">24</div>
-                  </div>
-                  <div>
-                    <p className="font-medium">Playlist Groove</p>
-                    <p className="text-xs text-gray-500">Downtown Music Hall</p>
-                  </div>
-                </div>
-                <Separator />
-                <Link href="/events" className="text-sm text-blue-600 hover:underline block text-center">
-                  View all events
-                </Link>
               </CardContent>
             </Card>
           </div>

@@ -1,6 +1,7 @@
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
+import { ObjectId } from 'mongodb';
 import authOptions from './auth/[...nextauth]';  
 import clientPromise from '../../lib/mongodb';
 import { CustomSession } from './auth/[...nextauth]';
@@ -35,18 +36,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             
         } else if (req.method === 'POST') {
             // Create new post
+            const { content, playlistId, playlistName, playlistImage, location } = req.body;
+            
+            // Basic validation
+            if (!content && !playlistId) {
+                return res.status(400).json({ message: 'Post content or playlist is required' });
+            }
+            
             const now = new Date();
             
             // Allow both regular posts and playlist posts
             const postData = {
-                ...req.body,
+                content: content || '',
                 user: username,
                 user_email: userEmail,
                 created_at: req.body.created_at || now.toISOString(),
                 likeCount: 0,
                 commentCount: 0,
-                shareCount: 0
-              };
+                shareCount: 0,
+                ...(playlistId && { 
+                    playlistId, 
+                    playlistName, 
+                    playlistImage 
+                }),
+                ...(location && { location })
+            };
             
             // Insert the post
             const result = await collection.insertOne(postData);
@@ -68,7 +82,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).json({ message: 'A valid Post ID is required' });
             }
             
-            const { ObjectId } = require('mongodb');
             const objectId = new ObjectId(postId);
             
             // Ensure users can only delete their own posts

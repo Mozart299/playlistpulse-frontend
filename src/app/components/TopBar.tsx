@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Bell, MessageSquare, Search } from 'lucide-react'
+import { Bell, MessageSquare, Search, Music, User, Settings, LogOut, ChevronDown } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -22,73 +22,222 @@ import { getInitials } from '@/lib/utils'
 const TopBar: React.FC = () => {
   const { data: session } = useSession()
   const router = useRouter()
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const notificationRef = useRef<HTMLDivElement>(null)
   
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' })
   }
 
+  // Mock notifications data
+  const notifications = [
+    {
+      id: 1,
+      type: 'like',
+      message: 'Sarah liked your playlist "Summer Vibes"',
+      time: '2 minutes ago',
+      read: false
+    },
+    {
+      id: 2,
+      type: 'match',
+      message: 'New music match found: Alex Rivera (94% compatibility)',
+      time: '1 hour ago',
+      read: false
+    },
+    {
+      id: 3,
+      type: 'comment',
+      message: 'Marcus commented on your post',
+      time: '3 hours ago',
+      read: true
+    },
+    {
+      id: 4,
+      type: 'follow',
+      message: 'Emma started following you',
+      time: '1 day ago',
+      read: true
+    }
+  ]
+
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  // Close notifications when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   return (
-    <div className="bg-brand shadow-md py-3 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
+    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm py-3 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50 border-b border-gray-200 dark:border-gray-700">
+      {/* Logo */}
       <div className="flex items-center">
-        <Link href="/home" className="text-2xl font-bold text-white">
-          The Playlist
+        <Link href="/home" className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
+            <Music className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+            The Playlist
+          </span>
         </Link>
       </div>
       
-      <div className="flex-1 max-w-2xl mx-auto relative">
-        <div className="relative flex items-center">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+      {/* Search Bar */}
+      <div className="flex-1 max-w-2xl mx-8">
+        <div className="relative">
+          <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-200 ${
+            searchFocused ? 'text-orange-500' : 'text-gray-400'
+          }`} />
           <Input 
             placeholder="Search for music, playlists, or people..." 
-            className="pl-10 py-2 w-full bg-white border-0 focus-visible:ring-2"
+            className={`pl-12 py-3 w-full bg-gray-100 dark:bg-gray-800 border-0 rounded-2xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 ${
+              searchFocused ? 'bg-white dark:bg-gray-700 shadow-lg' : ''
+            }`}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
           />
         </div>
       </div>
       
-      <div className="flex items-center space-x-1 md:space-x-4">
-        <Button variant="ghost" size="icon" className="text-white" asChild>
+      {/* Right Actions */}
+      <div className="flex items-center space-x-4">
+        {/* Messages */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200" 
+          asChild
+        >
           <Link href="/messages">
-            <MessageSquare className="h-5 w-5" />
+            <MessageSquare className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+              3
+            </span>
           </Link>
         </Button>
         
-        <Button variant="ghost" size="icon" className="text-white" asChild>
-          <Link href="/notifications">
-            <Bell className="h-5 w-5" />
-          </Link>
-        </Button>
+        {/* Notifications */}
+        <div className="relative" ref={notificationRef}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <Bell className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+            )}
+          </Button>
+
+          {/* Notifications Dropdown */}
+          {showNotifications && (
+            <div className="absolute right-0 top-12 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-4 z-50">
+              <div className="px-6 pb-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                  {unreadCount > 0 && (
+                    <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded-full">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                {notifications.map((notification) => (
+                  <div 
+                    key={notification.id}
+                    className={`px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
+                      !notification.read ? 'bg-orange-50 dark:bg-orange-900/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={`w-2 h-2 rounded-full mt-2 ${
+                        !notification.read ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+                      }`}></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{notification.time}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="px-6 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <Button 
+                  variant="ghost" 
+                  className="w-full text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                  onClick={() => setShowNotifications(false)}
+                >
+                  View All Notifications
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
         
+        {/* Profile Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-9 w-9 border border-white/30">
+            <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+              <Avatar className="h-9 w-9 border-2 border-orange-500/20">
                 <AvatarImage src={session?.user?.image || ''} alt="Profile" />
-                <AvatarFallback>{getInitials(session?.user?.name)}</AvatarFallback>
+                <AvatarFallback className="bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold">
+                  {getInitials(session?.user?.name)}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
+          <DropdownMenuContent className="w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal px-4 py-3">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
+                  {session?.user?.name}
+                </p>
+                <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
                   {session?.user?.email}
                 </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => router.push('/my-profile')}>
-              Profile
+            <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+            <DropdownMenuItem 
+              className="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+              onSelect={() => router.push('/my-profile')}
+            >
+              <User className="mr-3 h-4 w-4" />
+              <span>Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => router.push('/all-playlists')}>
-              My Playlists
+            <DropdownMenuItem 
+              className="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+              onSelect={() => router.push('/all-playlists')}
+            >
+              <Music className="mr-3 h-4 w-4" />
+              <span>My Playlists</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => router.push('/settings')}>
-              Settings
+            <DropdownMenuItem 
+              className="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+              onSelect={() => router.push('/settings')}
+            >
+              <Settings className="mr-3 h-4 w-4" />
+              <span>Settings</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={handleSignOut}>
-              Log out
+            <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+            <DropdownMenuItem 
+              className="px-4 py-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 focus:bg-red-50 dark:focus:bg-red-900/20 text-red-600 dark:text-red-400"
+              onSelect={handleSignOut}
+            >
+              <LogOut className="mr-3 h-4 w-4" />
+              <span>Sign out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
