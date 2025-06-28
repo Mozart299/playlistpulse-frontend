@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import {
   Image as ImageIcon,
   Link as LinkIcon,
@@ -10,6 +12,7 @@ import {
   Smile,
   X,
   Music,
+  Send,
 } from 'lucide-react'
 import EmojiPicker from 'emoji-picker-react'
 import PlaylistSelectorModal from './PlaylistSelectorModal'
@@ -236,25 +239,56 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
 
   return (
     <>
-      <Card className="mb-6">
-        <form onSubmit={handleSubmit}>
-          <CardContent className="pt-6">
-            <div className="flex items-start space-x-3">
-              <Avatar className="h-10 w-10 border">
-                <AvatarImage src={userImage} alt={userName} />
-                <AvatarFallback>
-                  {userName?.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              
-              <Textarea
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                placeholder={`What's on your mind, ${userName?.split(' ')[0]}?`}
-                className="flex-1 resize-none focus-visible:ring-2"
-                rows={3}
-              />
+      <Card className="mb-6 shadow-sm border-2 border-transparent hover:border-brand/20 transition-colors duration-200">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-11 w-11 border-2 border-brand/10">
+              <AvatarImage src={userImage} alt={userName} />
+              <AvatarFallback className="bg-brand/5 text-brand font-medium">
+                {userName?.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Create a post</p>
+              <p className="text-sm text-muted-foreground">Share what's on your mind</p>
             </div>
+            {selectedPlaylist && (
+              <Badge variant="secondary" className="gap-1">
+                <Music className="w-3 h-3" />
+                Playlist attached
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        
+        <form onSubmit={handleSubmit}>
+          <CardContent className="pt-0">
+            <Textarea
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              placeholder={`What's on your mind, ${userName?.split(' ')[0]}?`}
+              className="flex-1 resize-none focus-visible:ring-2 focus-visible:ring-brand/20 border-0 bg-muted/30 text-base"
+              rows={4}
+            />
+            
+            {selectedLocation && (
+              <div className="mt-3 p-3 bg-muted/30 rounded-lg border">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-brand" />
+                  <span className="text-sm font-medium">Location</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">{selectedLocation.display_name}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedLocation(null)}
+                  className="mt-2 h-6 text-xs"
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
             
             {postImages.length > 0 && (
               <div className="grid grid-cols-3 gap-2 mt-4">
@@ -380,8 +414,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             )}
           </CardContent>
           
-          <CardFooter className="border-t pt-4 flex justify-between items-center">
-            <div className="flex space-x-2">
+          <Separator />
+          <CardFooter className="pt-4 flex justify-between items-center bg-muted/20">
+            <div className="flex space-x-1">
               <input
                 type="file"
                 multiple
@@ -394,71 +429,81 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-600"
+                  className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
                   type="button"
                   aria-label="Upload photo"
                 >
-                  <ImageIcon className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Photo</span>
+                  <ImageIcon className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline font-medium">Photo</span>
                 </Button>
               </label>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-600"
+                className="text-muted-foreground hover:text-green-600 hover:bg-green-50 transition-all duration-200"
                 type="button"
                 onClick={() => setShowLinkInput(true)}
                 aria-label="Insert link"
               >
-                <LinkIcon className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Link</span>
+                <LinkIcon className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline font-medium">Link</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-600"
+                className="text-muted-foreground hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
                 type="button"
                 onClick={() => setShowLocationInput(true)}
                 aria-label="Insert location"
               >
-                <MapPin className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Location</span>
+                <MapPin className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline font-medium">Location</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-600"
+                className="text-muted-foreground hover:text-yellow-600 hover:bg-yellow-50 transition-all duration-200"
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 aria-label="Toggle emoji picker"
                 aria-expanded={showEmojiPicker}
               >
-                <Smile className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Emoji</span>
+                <Smile className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline font-medium">Emoji</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-600"
+                className="text-muted-foreground hover:text-brand hover:bg-brand/10 transition-all duration-200"
                 type="button"
                 onClick={handlePlaylistButtonClick}
                 aria-label="Share playlist"
               >
-                <Music className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Playlist</span>
+                <Music className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline font-medium">Playlist</span>
               </Button>
             </div>
             
             <Button 
               type="submit" 
               disabled={!isPostValid() || isSubmitting}
-              className="bg-brand hover:bg-brand/90"
+              className="bg-brand hover:bg-brand/90 text-white font-medium px-6 gap-2 shadow-sm hover:shadow-md transition-all duration-200"
             >
-              {isSubmitting ? 'Posting...' : 'Post'}
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Posting...
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" />
+                  Post
+                </>
+              )}
             </Button>
           </CardFooter>
         </form>

@@ -3,12 +3,14 @@ import { useRelativeTime } from '../utils/useRelativeTime';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, MessageSquare, Share2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ThumbsUp, MessageSquare, Share2, Music, ExternalLink } from 'lucide-react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
-import { getInitials } from '@/lib/utils';
+import { getInitials, cn } from '@/lib/utils';
 
 interface Post {
   _id: string;
@@ -154,19 +156,27 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
   };
 
   return (
-    <Card className="mb-4 overflow-hidden">
-      <CardHeader className="pb-2">
-        <div className="flex items-center">
-          <Avatar className="h-10 w-10 mr-3 border">
-            <AvatarImage src={userImage} alt={post.user} />
-            <AvatarFallback>
-              {getInitials(post.user)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-semibold">{post.user}</p>
-            <p className="text-sm text-gray-500">{relativeTime}</p>
+    <Card className="mb-6 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 border-l-4 border-l-brand/20">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-11 w-11 border-2 border-brand/10">
+              <AvatarImage src={userImage} alt={post.user} />
+              <AvatarFallback className="bg-brand/5 text-brand font-medium">
+                {getInitials(post.user)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-semibold text-foreground">{post.user}</p>
+              <p className="text-sm text-muted-foreground">{relativeTime}</p>
+            </div>
           </div>
+          {post.playlistName && (
+            <Badge variant="secondary" className="gap-1">
+              <Music className="w-3 h-3" />
+              Playlist
+            </Badge>
+          )}
         </div>
       </CardHeader>
       
@@ -190,100 +200,119 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
         )}
         
         {post.playlistImage && (
-          <div className="mb-4 bg-gray-50 p-4 rounded-lg">
-            <p className="font-semibold mb-2">{post.playlistName}</p>
-            <a 
-              href={post.playlistUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block w-48 h-48 relative hover:opacity-90 transition-opacity"
-            >
-              <div className="w-full h-full">
-                <img
-                  src={post.playlistImage}
-                  alt={post.playlistName || 'Playlist'}
-                  className="w-full h-full object-cover rounded-md"
-                />
+          <Card className="mb-4 bg-gradient-to-br from-brand/5 to-brand/10 border-brand/20">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <Music className="w-5 h-5 text-brand" />
+                <h4 className="font-semibold text-foreground">{post.playlistName}</h4>
               </div>
-            </a>
-          </div>
+              <a 
+                href={post.playlistUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group block relative"
+              >
+                <div className="relative w-48 h-48 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300">
+                  <img
+                    src={post.playlistImage}
+                    alt={post.playlistName || 'Playlist'}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                    <ExternalLink className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                </div>
+              </a>
+            </CardContent>
+          </Card>
         )}
         
         {/* Interaction counts */}
         {(likeCount > 0 || commentCount > 0 || shareCount > 0) && (
-          <div className="flex justify-between items-center py-2 text-sm text-gray-500 border-t mt-4">
-            {likeCount > 0 && (
-              <div className="flex items-center">
-                <ThumbsUp className="h-4 w-4 mr-1 text-blue-500" />
-                <span>{likeCount}</span>
+          <>
+            <Separator className="my-3" />
+            <div className="flex justify-between items-center py-2 text-sm text-muted-foreground">
+              {likeCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <ThumbsUp className="h-4 w-4 text-blue-500" />
+                  <span className="font-medium">{likeCount}</span>
+                </div>
+              )}
+              <div className="flex gap-4">
+                {commentCount > 0 && (
+                  <Button 
+                    variant="link"
+                    size="sm"
+                    onClick={handleCommentClick} 
+                    className="h-auto p-0 text-muted-foreground hover:text-foreground"
+                  >
+                    {commentCount} comment{commentCount !== 1 ? 's' : ''}
+                  </Button>
+                )}
+                {shareCount > 0 && (
+                  <span className="text-sm">{shareCount} share{shareCount !== 1 ? 's' : ''}</span>
+                )}
               </div>
-            )}
-            <div className="flex space-x-4">
-              {commentCount > 0 && (
-                <button 
-                  onClick={handleCommentClick} 
-                  className="hover:underline"
-                >
-                  {commentCount} comment{commentCount !== 1 ? 's' : ''}
-                </button>
-              )}
-              {shareCount > 0 && (
-                <span>{shareCount} share{shareCount !== 1 ? 's' : ''}</span>
-              )}
             </div>
-          </div>
+          </>
         )}
         
         {/* Comments section */}
         {showComments && (
-          <div className="mt-4 border-t pt-4">
-            <CommentForm 
-              postId={post._id}
-              userImage={userImage}
-              userName={session?.user?.name || ''}
-              onCommentSubmit={handleCommentSubmit}
-            />
-            
-            {loadingComments ? (
-              <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-500"></div>
-              </div>
-            ) : (
-              <CommentList comments={comments} userImage={userImage} />
-            )}
-          </div>
+          <>
+            <Separator className="my-4" />
+            <div className="space-y-4">
+              <CommentForm 
+                postId={post._id}
+                userImage={userImage}
+                userName={session?.user?.name || ''}
+                onCommentSubmit={handleCommentSubmit}
+              />
+              
+              {loadingComments ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand"></div>
+                </div>
+              ) : (
+                <CommentList comments={comments} userImage={userImage} />
+              )}
+            </div>
+          </>
         )}
       </CardContent>
       
-      <CardFooter className="border-t pt-4 flex justify-between">
+      <CardFooter className="pt-4 flex justify-between bg-muted/20">
         <Button 
-          variant="ghost" 
+          variant={userLiked ? "default" : "ghost"} 
           size="sm" 
-          className={`flex items-center ${userLiked ? 'text-blue-600' : ''}`}
+          className={cn(
+            "flex items-center gap-2 transition-all duration-200",
+            userLiked ? "bg-blue-500 hover:bg-blue-600 text-white" : "hover:bg-blue-50 hover:text-blue-600"
+          )}
           onClick={handleLike}
         >
-          <ThumbsUp className={`mr-1 h-4 w-4 ${userLiked ? 'fill-current text-blue-600' : ''}`} />
-          <span>Like</span>
+          <ThumbsUp className={cn("h-4 w-4", userLiked && "fill-current")} />
+          <span className="font-medium">Like</span>
         </Button>
         
         <Button 
           variant="ghost" 
           size="sm" 
-          className="flex items-center"
+          className="flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
           onClick={handleCommentClick}
         >
-          <MessageSquare className="mr-1 h-4 w-4" />
-          <span>Comment</span>
+          <MessageSquare className="h-4 w-4" />
+          <span className="font-medium">Comment</span>
         </Button>
         
         <Button 
           variant="ghost" 
           size="sm" 
-          className="flex items-center"
+          className="flex items-center gap-2 hover:bg-orange-50 hover:text-orange-600 transition-all duration-200"
           onClick={handleShare}
         >
-          <Share2 className="mr-1 h-4 w-4" />
-          <span>Share</span>
+          <Share2 className="h-4 w-4" />
+          <span className="font-medium">Share</span>
         </Button>
       </CardFooter>
     </Card>
