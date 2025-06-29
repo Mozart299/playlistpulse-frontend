@@ -178,7 +178,7 @@ const RightSideBar: React.FC = () => {
 
   return (
     <div className="bg-white dark:bg-gray-900 w-80 h-full overflow-y-auto border-l border-gray-200 dark:border-gray-700 shadow-sm">
-      <div className="p-6 space-y-6">
+      <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
         {/* Music Matches Section */}
         <Card className="border border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-3">
