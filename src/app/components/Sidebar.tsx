@@ -87,7 +87,7 @@ const Sidebar: React.FC = () => {
   ];
     
   return (
-    <div className="bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-72 min-h-screen flex flex-col fixed top-0 left-0 z-40 pt-20">
+    <div className="bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-72 min-h-screen flex flex-col fixed top-0 left-0 z-40 pt-20 hidden lg:flex">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Menu</h2>

@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { Card } from '@/components/ui/card';
 import CreatePost from './CreatePost';
-import PostItem from './PostItem';
-import PlaylistPostCard from './PlaylistPostCard';
+import UnifiedPostCard from './UnifiedPostCard';
+import { FeedSkeleton } from '@/components/ui/skeletons';
 
 const HomeContent: React.FC = () => {
   const { data: session } = useSession();
@@ -42,29 +42,23 @@ const HomeContent: React.FC = () => {
   };
 
   const renderPost = (post: any) => {
-    // Check if this is a playlist post
-    if (post.playlistId && post.playlistName) {
-      return (
-        <PlaylistPostCard
-          key={post._id}
-          post={post}
-          userImage={session?.user?.image as string}
-        />
-      );
-    }
+    // Determine post type and add it to the post object
+    const postWithType = {
+      ...post,
+      type: (post.playlistId && post.playlistName) ? 'playlist' : 'regular'
+    };
     
-    // Otherwise render a regular post
     return (
-      <PostItem
+      <UnifiedPostCard
         key={post._id}
-        post={post}
+        post={postWithType}
         userImage={session?.user?.image as string}
       />
     );
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto w-full">
       {/* Post Creation Form */}
       <CreatePost
         userImage={session?.user?.image as string}
@@ -74,9 +68,7 @@ const HomeContent: React.FC = () => {
       
       {/* Posts Feed */}
       {isLoading ? (
-        <div className="flex justify-center py-10">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand"></div>
-        </div>
+        <FeedSkeleton count={3} />
       ) : error ? (
         <Card className="p-6 text-center">
           <p className="text-red-500">{error}</p>

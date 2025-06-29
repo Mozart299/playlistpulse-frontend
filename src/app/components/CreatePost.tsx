@@ -249,8 +249,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="font-semibold text-foreground">Create a post</p>
-              <p className="text-sm text-muted-foreground">Share what's on your mind</p>
+              <p className="font-semibold text-gray-900 dark:text-white">Create a post</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Share what's on your mind</p>
             </div>
             {selectedPlaylist && (
               <Badge variant="secondary" className="gap-1">
@@ -267,17 +267,17 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
               placeholder={`What's on your mind, ${userName?.split(' ')[0]}?`}
-              className="flex-1 resize-none focus-visible:ring-2 focus-visible:ring-brand/20 border-0 bg-muted/30 text-base"
+              className="flex-1 text-gray-900 dark:text-white resize-none focus-visible:ring-2 focus-visible:ring-brand/20 border-0 bg-muted/30 text-base placeholder:text-gray-500 dark:placeholder:text-gray-400"
               rows={4}
             />
             
             {selectedLocation && (
               <div className="mt-3 p-3 bg-muted/30 rounded-lg border">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-brand" />
-                  <span className="text-sm font-medium">Location</span>
+                  <MapPin className="w-4 h-4 text-brand-primary" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">Location</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">{selectedLocation.display_name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{selectedLocation.display_name}</p>
                 <Button
                   type="button"
                   variant="ghost"
@@ -327,7 +327,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                   value={linkInput}
                   onChange={(e) => setLinkInput(e.target.value)}
                   placeholder="Enter a URL (e.g., https://example.com)"
-                  className="flex-1 border rounded p-2 text-sm"
+                  className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-colors"
                   aria-label="Enter URL"
                 />
                 <Button
@@ -361,7 +361,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                     value={locationInput}
                     onChange={handleLocationInputChange}
                     placeholder="Search for a location (e.g., New York, NY)"
-                    className="flex-1 border rounded p-2 text-sm"
+                    className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-colors"
                     aria-label="Search for a location"
                     autoComplete="off"
                   />
@@ -391,14 +391,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 </div>
                 {showSuggestions && locationSuggestions.length > 0 && (
                   <ul
-                    className="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-60 overflow-auto"
+                    className="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg mt-1 max-h-60 overflow-auto"
                     role="listbox"
                     aria-label="Location suggestions"
                   >
                     {locationSuggestions.map((suggestion) => (
                       <li
                         key={suggestion.place_id}
-                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-900 dark:text-white transition-colors"
                         onClick={() => handleSuggestionSelect(suggestion)}
                         onKeyDown={(e) => handleSuggestionKeyDown(e, suggestion)}
                         role="option"

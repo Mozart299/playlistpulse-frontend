@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Bell, MessageSquare, Search, Music, User, Settings, LogOut, ChevronDown } from 'lucide-react'
+import { Bell, MessageSquare, Search, Music, User, Settings, LogOut, ChevronDown, Menu } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -19,7 +19,11 @@ import {
 import { signOut } from 'next-auth/react'
 import { getInitials } from '@/lib/utils'
 
-const TopBar: React.FC = () => {
+interface TopBarProps {
+  onMobileMenuToggle?: () => void;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
   const { data: session } = useSession()
   const router = useRouter()
   const [showNotifications, setShowNotifications] = useState(false)
@@ -80,27 +84,39 @@ const TopBar: React.FC = () => {
 
   return (
     <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm py-3 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50 border-b border-gray-200 dark:border-gray-700">
-      {/* Logo */}
-      <div className="flex items-center">
-        <Link href="/home" className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
-            <Music className="w-6 h-6 text-white" />
+      {/* Logo and Mobile Menu */}
+      <div className="flex items-center space-x-4">
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
+          onClick={onMobileMenuToggle}
+          aria-label="Open mobile menu"
+          aria-expanded="false"
+        >
+          <Menu className="h-6 w-6" />
+        </Button>
+        
+        <Link href="/home" className="flex items-center space-x-2 lg:space-x-3">
+          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
+            <Music className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+          <span className="text-lg lg:text-xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent hidden sm:block">
             The Playlist
           </span>
         </Link>
       </div>
       
       {/* Search Bar */}
-      <div className="flex-1 max-w-2xl mx-8">
+      <div className="flex-1 max-w-2xl mx-2 lg:mx-8 hidden md:block">
         <div className="relative">
           <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-200 ${
             searchFocused ? 'text-orange-500' : 'text-gray-400'
           }`} />
           <Input 
             placeholder="Search for music, playlists, or people..." 
-            className={`pl-12 py-3 w-full bg-gray-100 dark:bg-gray-800 border-0 rounded-2xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 ${
+            className={`pl-12 text-gray-900 dark:text-white py-3 w-full bg-gray-100 dark:bg-gray-800 border-0 rounded-2xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
               searchFocused ? 'bg-white dark:bg-gray-700 shadow-lg' : ''
             }`}
             onFocus={() => setSearchFocused(true)}
@@ -110,17 +126,27 @@ const TopBar: React.FC = () => {
       </div>
       
       {/* Right Actions */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2 lg:space-x-4">
+        {/* Mobile Search Button */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+          aria-label="Open search"
+        >
+          <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        </Button>
+        
         {/* Messages */}
         <Button 
           variant="ghost" 
           size="icon" 
-          className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200" 
+          className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 hidden sm:flex" 
           asChild
         >
           <Link href="/messages">
-            <MessageSquare className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+            <MessageSquare className="h-5 w-5 lg:h-6 lg:w-6 text-gray-600 dark:text-gray-300" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 lg:w-5 lg:h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
               3
             </span>
           </Link>
@@ -133,8 +159,10 @@ const TopBar: React.FC = () => {
             size="icon"
             className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
             onClick={() => setShowNotifications(!showNotifications)}
+            aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
+            aria-expanded={showNotifications}
           >
-            <Bell className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+            <Bell className="h-5 w-5 lg:h-6 lg:w-6 text-gray-600 dark:text-gray-300" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
             )}
@@ -142,7 +170,7 @@ const TopBar: React.FC = () => {
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-12 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-4 z-50">
+            <div className="absolute right-0 top-12 w-80 sm:w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-4 z-50">
               <div className="px-6 pb-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
@@ -189,10 +217,10 @@ const TopBar: React.FC = () => {
         {/* Profile Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
-              <Avatar className="h-9 w-9 border-2 border-orange-500/20">
+            <Button variant="ghost" className="relative h-8 w-8 lg:h-10 lg:w-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+              <Avatar className="h-7 w-7 lg:h-9 lg:w-9 border-2 border-orange-500/20">
                 <AvatarImage src={session?.user?.image || ''} alt="Profile" />
-                <AvatarFallback className="bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold">
+                <AvatarFallback className="bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold text-sm">
                   {getInitials(session?.user?.name)}
                 </AvatarFallback>
               </Avatar>
