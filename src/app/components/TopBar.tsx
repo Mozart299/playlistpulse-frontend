@@ -92,6 +92,8 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
           size="icon"
           className="lg:hidden"
           onClick={onMobileMenuToggle}
+          aria-label="Open mobile menu"
+          aria-expanded="false"
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -114,7 +116,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
           }`} />
           <Input 
             placeholder="Search for music, playlists, or people..." 
-            className={`pl-12 py-3 w-full bg-gray-100 dark:bg-gray-800 border-0 rounded-2xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 ${
+            className={`pl-12 text-gray-900 dark:text-white py-3 w-full bg-gray-100 dark:bg-gray-800 border-0 rounded-2xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
               searchFocused ? 'bg-white dark:bg-gray-700 shadow-lg' : ''
             }`}
             onFocus={() => setSearchFocused(true)}
@@ -130,6 +132,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
           variant="ghost" 
           size="icon" 
           className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+          aria-label="Open search"
         >
           <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
         </Button>
@@ -156,6 +159,8 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
             size="icon"
             className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
             onClick={() => setShowNotifications(!showNotifications)}
+            aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
+            aria-expanded={showNotifications}
           >
             <Bell className="h-5 w-5 lg:h-6 lg:w-6 text-gray-600 dark:text-gray-300" />
             {unreadCount > 0 && (

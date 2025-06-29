@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import RootLayoutWrapper from "./layout-wrapper";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <RootLayoutWrapper>
           {children}
         </RootLayoutWrapper>
+        <ToastProvider />
       </body>
     </html>
   );
