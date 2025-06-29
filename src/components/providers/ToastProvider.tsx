@@ -17,8 +17,7 @@ export function ToastProvider() {
         },
         className: 'sonner-toast',
         descriptionClassName: 'sonner-toast-description',
-        actionButtonClassName: 'sonner-toast-action',
-        cancelButtonClassName: 'sonner-toast-cancel',
+    
       }}
     />
   );
