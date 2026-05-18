@@ -421,8 +421,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
           </CardContent>
           
           <Separator />
-          <CardFooter className="pt-4 flex justify-between items-center bg-muted/20">
-            <div className="flex space-x-1">
+          <CardFooter className="pt-4 flex items-center gap-2 bg-muted/20 overflow-x-auto">
+            <div className="flex space-x-1 flex-shrink-0">
               <input
                 type="file"
                 multiple
@@ -497,7 +497,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             <Button 
               type="submit" 
               disabled={!isPostValid() || isSubmitting}
-              className="bg-brand hover:bg-brand/90 text-white font-medium px-6 gap-2 shadow-sm hover:shadow-md transition-all duration-200"
+              className="bg-brand hover:bg-brand/90 text-white font-medium px-4 sm:px-6 gap-2 shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0 ml-auto"
             >
               {isSubmitting ? (
                 <>

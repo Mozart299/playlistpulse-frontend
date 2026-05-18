@@ -348,7 +348,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
                 <h4 className="font-semibold text-foreground">{playlistInfo.name}</h4>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="relative w-32 h-32 rounded-lg overflow-hidden flex-shrink-0 group shadow-md">
+                <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg overflow-hidden flex-shrink-0 group shadow-md">
                   <img
                     src={playlistInfo.image || '/default-playlist.png'}
                     alt={`${playlistInfo.name} cover`}

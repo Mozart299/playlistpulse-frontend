@@ -225,7 +225,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
                 rel="noopener noreferrer"
                 className="group block relative"
               >
-                <div className="relative w-48 h-48 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300">
                   <img
                     src={post.playlistImage}
                     alt={post.playlistName || 'Playlist'}

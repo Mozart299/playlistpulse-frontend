@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import axios from 'axios'
 import Link from 'next/link'
 import TopBar from '@/app/components/TopBar'
+import MobileMenu from '@/app/components/MobileMenu'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, Search } from 'lucide-react'
@@ -24,6 +25,7 @@ export default function AllPlaylists() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
 
@@ -90,7 +92,11 @@ export default function AllPlaylists() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopBar />
+      <TopBar
+        onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        isMobileMenuOpen={isMobileMenuOpen}
+      />
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
       
       <div className="container mx-auto px-4 pt-24 pb-10">
         <div className="flex items-center mb-6">

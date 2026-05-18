@@ -6,6 +6,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import Image from 'next/image'
 import TopBar from '@/app/components/TopBar'
+import MobileMenu from '@/app/components/MobileMenu'
 import PostItem from '@/app/components/PostItem'
 import CreatePost from '@/app/components/CreatePost'
 import PlaylistGrid from '@/app/components/PlaylistGrid'
@@ -17,6 +18,7 @@ import { MessageSquare, Mail, UserPlus, Settings } from 'lucide-react'
 
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [playlists, setPlaylists] = useState<any[]>([])
   const [posts, setPosts] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('posts')
@@ -86,7 +88,11 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopBar />
+      <TopBar
+        onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        isMobileMenuOpen={isMobileMenuOpen}
+      />
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
       
       <div className="container mx-auto px-4 pt-24 pb-10">
         {/* Profile Header */}
