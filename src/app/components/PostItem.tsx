@@ -7,13 +7,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Heart, MessageSquare, Share2, Music, ExternalLink } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Music, ExternalLink, Bookmark } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 import { getInitials, cn } from '@/lib/utils';
 import { usePostInteractions } from '@/hooks/usePostInteractions';
+import { useBookmark } from '@/hooks/useBookmark';
 import { CommentSkeleton } from '@/components/ui/skeletons';
 
 interface Post {
@@ -41,6 +42,8 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
   const relativeTime = useRelativeTime(post.created_at);
   const { data: session } = useSession();
   const images = Array.isArray(post.images) ? post.images : [];
+
+  const { isBookmarked, toggleBookmark } = useBookmark(post._id);
 
   const {
     likeCount, commentCount, shareCount,
@@ -210,6 +213,19 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
         >
           <Share2 className="h-4 w-4" />
           <span className="font-medium">Share</span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            'flex items-center gap-2 transition-all duration-200',
+            isBookmarked ? 'text-yellow-500 hover:text-yellow-600' : 'hover:text-yellow-500'
+          )}
+          onClick={toggleBookmark}
+          aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
+        >
+          <Bookmark className={cn('h-4 w-4', isBookmarked && 'fill-current')} />
         </Button>
       </CardFooter>
     </Card>

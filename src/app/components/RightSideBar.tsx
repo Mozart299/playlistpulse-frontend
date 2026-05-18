@@ -1,342 +1,265 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import {
-  Users,
-  TrendingUp,
-  Calendar,
-  MapPin,
-  Clock,
-  DollarSign,
-  Tag,
-  Music,
-  Play,
-  Heart,
-  MessageCircle,
-  UserPlus
+  Users, TrendingUp, Calendar, MapPin, Clock, DollarSign, Tag, Play, UserPlus,
 } from 'lucide-react';
+import {
+  MusicMatchSkeleton, TrendingPlaylistSkeleton, EventSkeleton,
+} from '@/components/ui/skeletons';
+import { getInitials } from '@/lib/utils';
 
-interface MusicMatch {
-  id: string;
+interface Match {
+  email: string;
   name: string;
-  genre: string;
-  compatibility: number;
-  avatar: string;
-  mutual: number;
+  image: string;
+  similarity: number;
+  topGenres: string[];
 }
 
-interface TrendingPlaylist {
-  id: string;
-  name: string;
-  creator: string;
-  plays: string;
-  cover: string;
-  genre: string;
+interface TrendingPost {
+  _id: string;
+  user: string;
+  playlistName: string;
+  playlistImage: string;
+  playlistUrl: string;
+  likeCount: number;
 }
 
-interface UpcomingEvent {
-  id: string;
+interface Event {
+  _id: string;
   name: string;
   venue: string;
   date: string;
   time: string;
   price: string;
-  image: string;
-  attendees: number;
-}
-
-interface CommunityChat {
-  id: string;
-  name: string;
-  avatar: string;
-  members: number;
-  lastActive: string;
+  attendees: string[];
 }
 
 const RightSideBar: React.FC = () => {
-  // Mock data
-  const musicMatches: MusicMatch[] = [
-    { 
-      id: '1', 
-      name: 'Alex Rivera', 
-      genre: 'Indie Rock', 
-      compatibility: 94, 
-      avatar: '🎸',
-      mutual: 12
-    },
-    { 
-      id: '2', 
-      name: 'Emma Wu', 
-      genre: 'Electronic', 
-      compatibility: 89, 
-      avatar: '🎧',
-      mutual: 8
-    },
-    { 
-      id: '3', 
-      name: 'David Kim', 
-      genre: 'Jazz Fusion', 
-      compatibility: 85, 
-      avatar: '🎷',
-      mutual: 5
-    }
-  ];
+  const { data: session } = useSession();
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [trending, setTrending] = useState<TrendingPost[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState(true);
+  const [loadingTrending, setLoadingTrending] = useState(true);
+  const [loadingEvents, setLoadingEvents] = useState(true);
 
-  const trendingPlaylists: TrendingPlaylist[] = [
-    { 
-      id: '1', 
-      name: 'Chill Synthwave', 
-      creator: 'NeonVibes', 
-      plays: '2.1M', 
-      cover: '🌆',
-      genre: 'Electronic'
-    },
-    { 
-      id: '2', 
-      name: 'Acoustic Coffee', 
-      creator: 'CafeMelodies', 
-      plays: '1.8M', 
-      cover: '☕',
-      genre: 'Acoustic'
-    },
-    { 
-      id: '3', 
-      name: 'Workout Beats', 
-      creator: 'FitnessMusic', 
-      plays: '1.5M', 
-      cover: '💪',
-      genre: 'Electronic'
-    }
-  ];
+  useEffect(() => {
+    if (!session) return;
 
-  const upcomingEvents: UpcomingEvent[] = [
-    { 
-      id: '1', 
-      name: 'Jazz Night Live', 
-      venue: 'Blue Note Cafe', 
-      date: 'Tonight', 
-      time: '8:00 PM', 
-      price: 'Free', 
-      image: '🎺',
-      attendees: 45
-    },
-    { 
-      id: '2', 
-      name: 'Indie Rock Festival', 
-      venue: 'Central Park', 
-      date: 'Saturday', 
-      time: '2:00 PM', 
-      price: '$25', 
-      image: '🎸',
-      attendees: 234
-    },
-    { 
-      id: '3', 
-      name: 'Electronic Showcase', 
-      venue: 'Underground Club', 
-      date: 'Sunday', 
-      time: '9:00 PM', 
-      price: '$15', 
-      image: '🎧',
-      attendees: 89
-    }
-  ];
+    // Fetch top 3 matches (no refresh — use cached profiles only)
+    axios.get('/api/matches')
+      .then(res => setMatches((res.data.matches || []).slice(0, 3)))
+      .catch(() => {})
+      .finally(() => setLoadingMatches(false));
 
-  const communityChats: CommunityChat[] = [
-    { 
-      id: '1', 
-      name: 'Folk Enthusiasts', 
-      avatar: '🎻', 
-      members: 1240, 
-      lastActive: '2m ago' 
-    },
-    { 
-      id: '2', 
-      name: 'Electronic Vibes', 
-      avatar: '🎹', 
-      members: 2156, 
-      lastActive: '5m ago' 
-    },
-    { 
-      id: '3', 
-      name: 'Jazz Collective', 
-      avatar: '🎺', 
-      members: 890, 
-      lastActive: '12m ago' 
-    },
-    { 
-      id: '4', 
-      name: 'Indie Underground', 
-      avatar: '🎸', 
-      members: 1567, 
-      lastActive: '1h ago' 
-    }
-  ];
+    // Fetch top 3 trending playlists
+    axios.get('/api/discover?sort=popular&limit=3')
+      .then(res => setTrending(res.data.posts || []))
+      .catch(() => {})
+      .finally(() => setLoadingTrending(false));
+
+    // Fetch next 3 upcoming events
+    axios.get('/api/events?upcoming=true&limit=3')
+      .then(res => setEvents(res.data || []))
+      .catch(() => {})
+      .finally(() => setLoadingEvents(false));
+  }, [session]);
 
   return (
     <div className="bg-white dark:bg-gray-900 w-80 h-full overflow-y-auto border-l border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
-        {/* Music Matches Section */}
+
+        {/* Music Matches */}
         <Card className="border border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Users className="w-5 h-5 text-orange-500" />
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4 text-orange-500" />
                 Music Matches
               </CardTitle>
-              <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200">
-                {musicMatches.length}
-              </Badge>
+              {matches.length > 0 && (
+                <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 text-xs">
+                  {matches.length}
+                </Badge>
+              )}
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="space-y-3">
-              {musicMatches.map((match) => (
-                <div key={match.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-lg">
-                      {match.avatar}
+            {loadingMatches ? (
+              <div className="space-y-2">
+                <MusicMatchSkeleton /><MusicMatchSkeleton />
+              </div>
+            ) : matches.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">
+                Visit <Link href="/matches" className="text-orange-500 hover:underline">Matches</Link> to find your music twins
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {matches.map(match => (
+                  <div key={match.email} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <div className="flex items-center space-x-2 min-w-0">
+                      <Avatar className="h-9 w-9 flex-shrink-0">
+                        <AvatarImage src={match.image} />
+                        <AvatarFallback className="text-xs bg-orange-100 text-orange-700">
+                          {getInitials(match.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{match.name}</p>
+                        {match.topGenres[0] && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate capitalize">{match.topGenres[0]}</p>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white text-sm">{match.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{match.genre}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">{match.mutual} mutual friends</p>
+                    <div className="text-right flex-shrink-0 ml-2">
+                      <p className="text-sm font-semibold text-green-600 dark:text-green-400">{match.similarity}%</p>
+                      <Button size="sm" variant="ghost" className="text-xs text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 p-1 h-auto" asChild>
+                        <Link href={`/user/${encodeURIComponent(match.email)}`}>
+                          <UserPlus className="w-3 h-3" />
+                        </Link>
+                      </Button>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-green-600 dark:text-green-400">{match.compatibility}%</p>
-                    <Button size="sm" variant="ghost" className="text-xs text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 p-1">
-                      <UserPlus className="w-3 h-3 mr-1" />
-                      Connect
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Button variant="ghost" className="w-full mt-3 text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20" asChild>
+                ))}
+              </div>
+            )}
+            <Button variant="ghost" className="w-full mt-3 text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm" asChild>
               <Link href="/matches">View All Matches</Link>
             </Button>
           </CardContent>
         </Card>
 
-        {/* Trending Playlists Section */}
+        {/* Trending Playlists */}
         <Card className="border border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-purple-500" />
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-purple-500" />
               Trending Playlists
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="space-y-3">
-              {trendingPlaylists.map((playlist) => (
-                <div key={playlist.id} className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-lg shadow-sm">
-                    {playlist.cover}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{playlist.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">by {playlist.creator}</p>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline" className="text-xs py-0 px-1">{playlist.genre}</Badge>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{playlist.plays} plays</span>
+            {loadingTrending ? (
+              <div className="space-y-2">
+                <TrendingPlaylistSkeleton /><TrendingPlaylistSkeleton />
+              </div>
+            ) : trending.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">
+                No playlists shared yet. <Link href="/discover" className="text-purple-500 hover:underline">Be the first!</Link>
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {trending.map(post => (
+                  <div key={post._id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors">
+                    <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500">
+                      {post.playlistImage ? (
+                        <img src={post.playlistImage} alt={post.playlistName} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-white text-lg">♪</div>
+                      )}
                     </div>
-                  </div>
-                  <Button size="sm" variant="ghost" className="text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 p-1">
-                    <Play className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Community Chats Section */}
-        <Card className="border border-gray-200 dark:border-gray-700">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-blue-500" />
-              Community Chats
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-2">
-              {communityChats.map((chat) => (
-                <Link key={chat.id} href="/messages" className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-sm mr-3">
-                    {chat.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.name}</p>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{chat.members.toLocaleString()} members</span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{chat.lastActive}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{post.playlistName}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">by {post.user}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{post.likeCount || 0} likes</p>
                     </div>
+                    {post.playlistUrl && (
+                      <Button size="sm" variant="ghost" className="text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 p-1 flex-shrink-0" asChild>
+                        <a href={post.playlistUrl} target="_blank" rel="noopener noreferrer" aria-label="Open playlist">
+                          <Play className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    )}
                   </div>
-                </Link>
-              ))}
-            </div>
-            <Button variant="ghost" className="w-full mt-3 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20" asChild>
-              <Link href="/communities">Explore Communities</Link>
+                ))}
+              </div>
+            )}
+            <Button variant="ghost" className="w-full mt-3 text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 text-sm" asChild>
+              <Link href="/discover">Browse All Playlists</Link>
             </Button>
           </CardContent>
         </Card>
 
-        {/* Upcoming Events Section */}
+        {/* Upcoming Events */}
         <Card className="border border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-green-500" />
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-green-500" />
               Upcoming Events
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="space-y-3">
-              {upcomingEvents.map((event) => (
-                <div key={event.id} className="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl border border-green-200 dark:border-green-800 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-start space-x-3 mb-3">
-                    <div className="text-2xl">{event.image}</div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{event.name}</h4>
-                      <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        <MapPin className="w-3 h-3 mr-1" />
-                        {event.venue}
+            {loadingEvents ? (
+              <div className="space-y-2">
+                <EventSkeleton /><EventSkeleton />
+              </div>
+            ) : events.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">
+                No events yet. <Link href="/events" className="text-green-500 hover:underline">Create one!</Link>
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {events.map(event => (
+                  <div key={event._id} className="p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1 truncate">{event.name}</h4>
+                    {event.venue && (
+                      <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        <MapPin className="w-3 h-3 mr-1" />{event.venue}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-0.5">
+                          <Clock className="w-3 h-3" />
+                          {new Date(event.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {event.time && ` ${event.time}`}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {event.price === 'Free' ? (
+                          <Tag className="w-3 h-3 text-green-600" />
+                        ) : (
+                          <DollarSign className="w-3 h-3 text-green-600" />
+                        )}
+                        <span className="font-semibold text-green-600 dark:text-green-400">{event.price}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 text-xs text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {event.date} {event.time}
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="w-3 h-3 mr-1" />
-                        {event.attendees}
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      {event.price === 'Free' ? (
-                        <Tag className="w-3 h-3 mr-1 text-green-600" />
-                      ) : (
-                        <DollarSign className="w-3 h-3 mr-1 text-green-600" />
-                      )}
-                      <span className="text-sm font-semibold text-green-600 dark:text-green-400">{event.price}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Button variant="ghost" className="w-full mt-3 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20" asChild>
+                ))}
+              </div>
+            )}
+            <Button variant="ghost" className="w-full mt-3 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 text-sm" asChild>
               <Link href="/events">See All Events</Link>
             </Button>
           </CardContent>
         </Card>
+
+        {/* Community Chats — placeholder */}
+        <Card className="border border-gray-200 dark:border-gray-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <Users className="w-4 h-4 text-blue-500" />
+              Community Chats
+              <Badge variant="secondary" className="text-xs ml-1">Coming Soon</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <p className="text-xs text-muted-foreground">Group chats for music genres and communities are coming soon. For now, connect with matches directly via messages.</p>
+            <Button variant="ghost" className="w-full mt-3 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm" asChild>
+              <Link href="/messages">Open Messages</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
       </div>
     </div>
   );

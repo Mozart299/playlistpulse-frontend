@@ -31,6 +31,7 @@ export const authOptions: NextAuthOptions = {
             "user-library-modify",
             "user-read-private",
             "user-read-email",
+            "user-top-read",
           ].join(" "),
         },
       },

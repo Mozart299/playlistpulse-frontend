@@ -23,8 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (req.method === 'GET') {
             // Get posts - either all posts or filter by user if specified
-            const filter = req.query.username 
-                ? { user: req.query.username } 
+            const filter = req.query.userEmail
+                ? { user_email: req.query.userEmail }
+                : req.query.username
+                ? { user: req.query.username }
                 : {};
                 
             const posts = await collection
