@@ -56,16 +56,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
 
           if (existingLike) {
-            // If user already liked, remove the like (toggle)
             await interactionsCollection.deleteOne({ _id: existingLike._id });
-            // Decrement like count on the post
-            await postsCollection.updateOne(
+            const updated = await postsCollection.findOneAndUpdate(
               { _id: postObjectId },
-              { $inc: { likeCount: -1 } }
+              { $inc: { likeCount: -1 } },
+              { returnDocument: 'after' }
             );
-            return res.status(200).json({ message: 'Like removed', action: 'removed' });
+            return res.status(200).json({ message: 'Like removed', action: 'removed', count: updated?.likeCount ?? 0 });
           } else {
-            // Add new like
             await interactionsCollection.insertOne({
               postId: postObjectId,
               type: 'like',
@@ -73,12 +71,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               username,
               created_at: now.toISOString()
             });
-            // Increment like count on the post
-            await postsCollection.updateOne(
+            const updated = await postsCollection.findOneAndUpdate(
               { _id: postObjectId },
-              { $inc: { likeCount: 1 } }
+              { $inc: { likeCount: 1 } },
+              { returnDocument: 'after' }
             );
-            return res.status(201).json({ message: 'Post liked', action: 'added' });
+            return res.status(201).json({ message: 'Post liked', action: 'added', count: updated?.likeCount ?? 0 });
           }
 
         case 'comment':

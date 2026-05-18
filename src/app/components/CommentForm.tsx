@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface CommentFormProps {
   postId: string;
@@ -33,6 +34,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
       setComment(''); // Clear the input after successful submission
     } catch (error) {
       console.error('Error submitting comment:', error);
+      toast.error('Failed to post comment. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

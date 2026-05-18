@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             
         } else if (req.method === 'POST') {
             // Create new post
-            const { content, playlistId, playlistName, playlistImage, location } = req.body;
+            const { content, playlistId, playlistName, playlistImage, playlistUrl, location } = req.body;
             
             // Basic validation
             if (!content && !playlistId) {
@@ -54,10 +54,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 likeCount: 0,
                 commentCount: 0,
                 shareCount: 0,
-                ...(playlistId && { 
-                    playlistId, 
-                    playlistName, 
-                    playlistImage 
+                ...(playlistId && {
+                    playlistId,
+                    playlistName,
+                    playlistImage,
+                    playlistUrl
                 }),
                 ...(location && { location })
             };

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import React from 'react';
 import { useRelativeTime } from '../utils/useRelativeTime';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -6,12 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Heart, MessageSquare, Share2, Music, ExternalLink } from 'lucide-react';
-import { toast } from 'sonner';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 import { getInitials, cn } from '@/lib/utils';
+import { usePostInteractions } from '@/hooks/usePostInteractions';
+import { CommentSkeleton } from '@/components/ui/skeletons';
 
 interface Post {
   _id: string;
@@ -37,133 +40,31 @@ interface PostItemProps {
 const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
   const relativeTime = useRelativeTime(post.created_at);
   const { data: session } = useSession();
-  
-  // State for interactions
-  const [likeCount, setLikeCount] = useState(post.likeCount || 0);
-  const [commentCount, setCommentCount] = useState(post.commentCount || 0);
-  const [shareCount, setShareCount] = useState(post.shareCount || 0);
-  const [userLiked, setUserLiked] = useState(false);
-  const [loadingInteraction, setLoadingInteraction] = useState(false);
-  const [comments, setComments] = useState<any[]>([]);
-  const [showComments, setShowComments] = useState(false);
-  const [loadingComments, setLoadingComments] = useState(false);
-  
-  // Ensure images is an array or default to an empty array
   const images = Array.isArray(post.images) ? post.images : [];
 
-  // Check if user has liked the post on component mount
-  useEffect(() => {
-    const checkUserLike = async () => {
-      try {
-        const response = await axios.get(`/api/post-interactions?postId=${post._id}&type=like`);
-        setUserLiked(response.data.userLiked);
-        setLikeCount(response.data.count);
-      } catch (error) {
-        console.error('Error checking like status:', error);
-      }
-    };
+  const {
+    likeCount, commentCount, shareCount,
+    userLiked, comments, showComments, loadingComments, loadingInteraction,
+    handleLike, handleCommentClick, handleCommentSubmit, handleShare: sharePost,
+    hasInteractions,
+  } = usePostInteractions({
+    postId: post._id,
+    initialLikeCount: post.likeCount,
+    initialCommentCount: post.commentCount,
+    initialShareCount: post.shareCount,
+  });
 
-    if (session) {
-      checkUserLike();
-    }
-  }, [post._id, session]);
-
-  // Handle like button click with optimistic update
-  const handleLike = async () => {
-    if (loadingInteraction) return;
-    try {
-      setLoadingInteraction(true);
-      const newLikedState = !userLiked;
-      setUserLiked(newLikedState);
-      setLikeCount(prev => newLikedState ? prev + 1 : prev - 1);
-
-      const response = await axios.post('/api/post-interactions', {
-        postId: post._id,
-        type: 'like'
-      });
-
-      setUserLiked(response.data.action === 'added');
-      setLikeCount(response.data.count ?? likeCount);
-    } catch (error) {
-      console.error('Error toggling like:', error);
-      setUserLiked(!userLiked);
-      setLikeCount(prev => userLiked ? prev + 1 : prev - 1);
-    } finally {
-      setLoadingInteraction(false);
-    }
-  };
-
-  // Handle comment button click
-  const handleCommentClick = async () => {
-    setShowComments(!showComments);
-    
-    // Fetch comments if showing comments and we haven't loaded them yet
-    if (!showComments && comments.length === 0) {
-      await fetchComments();
-    }
-  };
-
-  // Fetch comments for the post
-  const fetchComments = async () => {
-    try {
-      setLoadingComments(true);
-      const response = await axios.get(`/api/post-interactions?postId=${post._id}&type=comment`);
-      setComments(response.data);
-      setCommentCount(response.data.length);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    } finally {
-      setLoadingComments(false);
-    }
-  };
-
-  // Handle comment submission
-  const handleCommentSubmit = async (content: string) => {
-    try {
-      const response = await axios.post('/api/post-interactions', {
-        postId: post._id,
-        type: 'comment',
-        content
-      });
-      
-      // Add the new comment to the list
-      const newComment = {
-        _id: response.data.commentId,
-        postId: post._id,
-        content,
-        username: session?.user?.name,
-        userEmail: session?.user?.email,
-        created_at: new Date().toISOString()
-      };
-      
-      setComments(prevComments => [newComment, ...prevComments]);
-      setCommentCount(prevCount => prevCount + 1);
-    } catch (error) {
-      console.error('Error submitting comment:', error);
-      throw error;
-    }
-  };
-
-  // Handle share button click
   const handleShare = async () => {
     try {
-      await axios.post('/api/post-interactions', {
-        postId: post._id,
-        type: 'share'
+      const result = await sharePost({
+        title: `Check out this post by ${post.user}`,
+        text: post.content,
+        url: post.playlistUrl || window.location.href,
       });
-      setShareCount(prevCount => prevCount + 1);
-
-      const shareText = `Check out this post by ${post.user}`;
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: shareText, url: window.location.href });
-        } catch {}
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
+      if (result?.method === 'clipboard') {
         toast.success('Link copied to clipboard!');
       }
-    } catch (error) {
-      console.error('Error sharing post:', error);
+    } catch {
       toast.error('Failed to share post');
     }
   };
@@ -192,26 +93,25 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-2">
-        <p className="whitespace-pre-line mb-4">{post.content}</p>
-        
+        {post.content && <p className="whitespace-pre-line mb-4">{post.content}</p>}
+
         {images.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
-            {images.map((image: string, index: number) => (
+          <div className={cn(
+            'grid gap-2 mb-4',
+            images.length === 1 && 'grid-cols-1',
+            images.length === 2 && 'grid-cols-2',
+            images.length >= 3 && 'grid-cols-2 sm:grid-cols-3',
+          )}>
+            {images.map((image, index) => (
               <div key={index} className="relative aspect-square rounded-md overflow-hidden">
-                <div className="w-full h-full">
-                  <img 
-                    src={image} 
-                    alt={`Photo ${index + 1}`}
-                    className="w-full h-full object-cover rounded-md" 
-                  />
-                </div>
+                <img src={image} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
         )}
-        
+
         {post.playlistImage && (
           <Card className="mb-4 bg-gradient-to-br from-brand/5 to-brand/10 border-brand/20">
             <CardContent className="p-4">
@@ -219,12 +119,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
                 <Music className="w-5 h-5 text-brand" />
                 <h4 className="font-semibold text-foreground">{post.playlistName}</h4>
               </div>
-              <a 
-                href={post.playlistUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group block relative"
-              >
+              <a href={post.playlistUrl} target="_blank" rel="noopener noreferrer" className="group block">
                 <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300">
                   <img
                     src={post.playlistImage}
@@ -239,12 +134,11 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
             </CardContent>
           </Card>
         )}
-        
-        {/* Interaction counts */}
-        {(likeCount > 0 || commentCount > 0 || shareCount > 0) && (
+
+        {hasInteractions && (
           <>
             <Separator className="my-3" />
-            <div className="flex justify-between items-center py-2 text-sm text-muted-foreground">
+            <div className="flex justify-between items-center py-1 text-sm text-muted-foreground">
               {likeCount > 0 && (
                 <div className="flex items-center gap-1">
                   <Heart className="h-4 w-4 text-red-500" />
@@ -253,39 +147,28 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
               )}
               <div className="flex gap-4">
                 {commentCount > 0 && (
-                  <Button 
-                    variant="link"
-                    size="sm"
-                    onClick={handleCommentClick} 
-                    className="h-auto p-0 text-muted-foreground hover:text-foreground"
-                  >
+                  <Button variant="link" size="sm" onClick={handleCommentClick} className="h-auto p-0 text-muted-foreground hover:text-foreground">
                     {commentCount} comment{commentCount !== 1 ? 's' : ''}
                   </Button>
                 )}
-                {shareCount > 0 && (
-                  <span className="text-sm">{shareCount} share{shareCount !== 1 ? 's' : ''}</span>
-                )}
+                {shareCount > 0 && <span>{shareCount} share{shareCount !== 1 ? 's' : ''}</span>}
               </div>
             </div>
           </>
         )}
-        
-        {/* Comments section */}
+
         {showComments && (
           <>
             <Separator className="my-4" />
             <div className="space-y-4">
-              <CommentForm 
+              <CommentForm
                 postId={post._id}
                 userImage={userImage}
                 userName={session?.user?.name || ''}
                 onCommentSubmit={handleCommentSubmit}
               />
-              
               {loadingComments ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand"></div>
-                </div>
+                <div className="space-y-3"><CommentSkeleton /><CommentSkeleton /></div>
               ) : (
                 <CommentList comments={comments} />
               )}
@@ -293,37 +176,35 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
           </>
         )}
       </CardContent>
-      
+
       <CardFooter className="pt-4 flex justify-between bg-muted/20">
         <Button
-          variant={userLiked ? "default" : "ghost"}
+          variant={userLiked ? 'default' : 'ghost'}
           size="sm"
           className={cn(
-            "flex items-center gap-2 transition-all duration-200",
-            userLiked
-              ? "bg-red-500 hover:bg-red-600 text-white"
-              : "hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20"
+            'flex items-center gap-2 transition-all duration-200',
+            userLiked ? 'bg-red-500 hover:bg-red-600 text-white' : 'hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20'
           )}
           onClick={handleLike}
           disabled={loadingInteraction}
         >
-          <Heart className={cn("h-4 w-4", userLiked && "fill-current")} />
+          <Heart className={cn('h-4 w-4', userLiked && 'fill-current')} />
           <span className="font-medium">Like</span>
         </Button>
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="flex items-center gap-2 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/20 transition-all duration-200"
           onClick={handleCommentClick}
         >
           <MessageSquare className="h-4 w-4" />
           <span className="font-medium">Comment</span>
         </Button>
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
+
+        <Button
+          variant="ghost"
+          size="sm"
           className="flex items-center gap-2 hover:bg-orange-50 hover:text-orange-600 transition-all duration-200"
           onClick={handleShare}
         >

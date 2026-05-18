@@ -20,6 +20,7 @@ import SharePlaylistModal from './SharePlaylistModal'
 import useSpotifyToken from '../utils/useSpotifytoken'
 import axios from 'axios'
 import debounce from 'lodash.debounce'
+import { toast } from 'sonner'
 
 interface Playlist {
   id: string;
@@ -141,7 +142,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       setLinkInput('')
       setShowLinkInput(false)
     } else {
-      alert('Please enter a valid URL (e.g., https://example.com)')
+      toast.warning('Please enter a valid URL (e.g., https://example.com)')
     }
   }
 
@@ -154,7 +155,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       setShowSuggestions(false)
       setShowLocationInput(false)
     } else {
-      alert('Please select a valid location from the suggestions')
+      toast.warning('Please select a valid location from the suggestions')
     }
   }
 
@@ -165,7 +166,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
 
   const handlePlaylistButtonClick = () => {
     if (!accessToken) {
-      alert('Please connect your Spotify account to share playlists')
+      toast.warning('Please connect your Spotify account to share playlists')
       return
     }
     
@@ -211,7 +212,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
       setShowSuggestions(false)
     } catch (error) {
       console.error('Error submitting post:', error)
-      alert('Failed to submit post. Please try again.')
+      toast.error('Failed to submit post. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
