@@ -5,13 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Users, 
-  TrendingUp, 
-  Calendar, 
-  MapPin, 
-  Clock, 
+import {
+  Users,
+  TrendingUp,
+  Calendar,
+  MapPin,
+  Clock,
   DollarSign,
+  Tag,
   Music,
   Play,
   Heart,
@@ -320,7 +321,11 @@ const RightSideBar: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <DollarSign className="w-3 h-3 mr-1 text-green-600" />
+                      {event.price === 'Free' ? (
+                        <Tag className="w-3 h-3 mr-1 text-green-600" />
+                      ) : (
+                        <DollarSign className="w-3 h-3 mr-1 text-green-600" />
+                      )}
                       <span className="text-sm font-semibold text-green-600 dark:text-green-400">{event.price}</span>
                     </div>
                   </div>

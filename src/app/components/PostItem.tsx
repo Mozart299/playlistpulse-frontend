@@ -5,7 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ThumbsUp, MessageSquare, Share2, Music, ExternalLink } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Music, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import CommentForm from './CommentForm';
@@ -42,6 +43,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
   const [commentCount, setCommentCount] = useState(post.commentCount || 0);
   const [shareCount, setShareCount] = useState(post.shareCount || 0);
   const [userLiked, setUserLiked] = useState(false);
+  const [loadingInteraction, setLoadingInteraction] = useState(false);
   const [comments, setComments] = useState<any[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -66,24 +68,28 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
     }
   }, [post._id, session]);
 
-  // Handle like button click
+  // Handle like button click with optimistic update
   const handleLike = async () => {
+    if (loadingInteraction) return;
     try {
+      setLoadingInteraction(true);
+      const newLikedState = !userLiked;
+      setUserLiked(newLikedState);
+      setLikeCount(prev => newLikedState ? prev + 1 : prev - 1);
+
       const response = await axios.post('/api/post-interactions', {
         postId: post._id,
         type: 'like'
       });
-      
-      // Toggle like status based on response
-      if (response.data.action === 'added') {
-        setUserLiked(true);
-        setLikeCount(prevCount => prevCount + 1);
-      } else {
-        setUserLiked(false);
-        setLikeCount(prevCount => prevCount - 1);
-      }
+
+      setUserLiked(response.data.action === 'added');
+      setLikeCount(response.data.count ?? likeCount);
     } catch (error) {
       console.error('Error toggling like:', error);
+      setUserLiked(!userLiked);
+      setLikeCount(prev => userLiked ? prev + 1 : prev - 1);
+    } finally {
+      setLoadingInteraction(false);
     }
   };
 
@@ -145,13 +151,20 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
         postId: post._id,
         type: 'share'
       });
-      
       setShareCount(prevCount => prevCount + 1);
-      
-      // Show a success message or modal for sharing
-      alert('Post shared successfully!');
+
+      const shareText = `Check out this post by ${post.user}`;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: shareText, url: window.location.href });
+        } catch {}
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
     } catch (error) {
       console.error('Error sharing post:', error);
+      toast.error('Failed to share post');
     }
   };
 
@@ -234,7 +247,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
             <div className="flex justify-between items-center py-2 text-sm text-muted-foreground">
               {likeCount > 0 && (
                 <div className="flex items-center gap-1">
-                  <ThumbsUp className="h-4 w-4 text-blue-500" />
+                  <Heart className="h-4 w-4 text-red-500" />
                   <span className="font-medium">{likeCount}</span>
                 </div>
               )}
@@ -274,7 +287,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand"></div>
                 </div>
               ) : (
-                <CommentList comments={comments} userImage={userImage} />
+                <CommentList comments={comments} />
               )}
             </div>
           </>
@@ -282,16 +295,19 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
       </CardContent>
       
       <CardFooter className="pt-4 flex justify-between bg-muted/20">
-        <Button 
-          variant={userLiked ? "default" : "ghost"} 
-          size="sm" 
+        <Button
+          variant={userLiked ? "default" : "ghost"}
+          size="sm"
           className={cn(
             "flex items-center gap-2 transition-all duration-200",
-            userLiked ? "bg-blue-500 hover:bg-blue-600 text-white" : "hover:bg-blue-50 hover:text-blue-600"
+            userLiked
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20"
           )}
           onClick={handleLike}
+          disabled={loadingInteraction}
         >
-          <ThumbsUp className={cn("h-4 w-4", userLiked && "fill-current")} />
+          <Heart className={cn("h-4 w-4", userLiked && "fill-current")} />
           <span className="font-medium">Like</span>
         </Button>
         

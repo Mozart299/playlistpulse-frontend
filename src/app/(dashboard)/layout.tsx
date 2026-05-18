@@ -13,7 +13,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
   return (
     <SessionWrapper>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <TopBar onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+        <TopBar onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} isMobileMenuOpen={isMobileMenuOpen} />
         <Sidebar />
         
         {/* Mobile Menu */}

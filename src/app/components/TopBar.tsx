@@ -21,9 +21,10 @@ import { getInitials } from '@/lib/utils'
 
 interface TopBarProps {
   onMobileMenuToggle?: () => void;
+  isMobileMenuOpen?: boolean;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
+const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = false }) => {
   const { data: session } = useSession()
   const router = useRouter()
   const [showNotifications, setShowNotifications] = useState(false)
@@ -92,8 +93,8 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
           size="icon"
           className="lg:hidden"
           onClick={onMobileMenuToggle}
-          aria-label="Open mobile menu"
-          aria-expanded="false"
+          aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+          aria-expanded={isMobileMenuOpen}
         >
           <Menu className="h-6 w-6" />
         </Button>

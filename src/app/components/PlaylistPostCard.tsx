@@ -230,7 +230,7 @@ const PlaylistPostCard: React.FC<PlaylistPostCardProps> = ({ post, userImage }) 
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-500"></div>
               </div>
             ) : (
-              <CommentList comments={comments} userImage={userImage || '/default-avatar.png'} />
+              <CommentList comments={comments} />
             )}
           </div>
         )}

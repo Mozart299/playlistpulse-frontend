@@ -111,7 +111,7 @@ const SharePlaylistModal: React.FC<SharePlaylistModalProps> = ({
           <Button 
             onClick={handlePostSubmit} 
             className="bg-brand hover:bg-brand/90"
-            disabled={!postContent.trim() || isSubmitting}
+            disabled={isSubmitting}
           >
             <Share2 className="mr-2 h-4 w-4" />
             {isSubmitting ? 'Sharing...' : 'Share'}

@@ -1,6 +1,4 @@
 
-import TopBar from "../components/TopBar";
-
 export default function RootLayout({
     children,
   }: Readonly<{
@@ -8,7 +6,6 @@ export default function RootLayout({
   }>) {
     return (
       <main>
-        <TopBar/>
         {children}
       </main>
     );

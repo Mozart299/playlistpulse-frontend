@@ -91,14 +91,7 @@ const ProfilePage: React.FC = () => {
       <div className="container mx-auto px-4 pt-24 pb-10">
         {/* Profile Header */}
         <div className="relative mb-8">
-          <div className="h-48 rounded-lg overflow-hidden">
-            <Image 
-              src="/images/banner-image.jpg" 
-              alt="Profile Banner" 
-              layout="fill" 
-              objectFit="cover" 
-              className="w-full"
-            />
+          <div className="h-48 rounded-lg overflow-hidden bg-gradient-to-r from-orange-500 to-pink-500">
           </div>
           
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between -mt-16 md:-mt-12 relative z-10 px-4">

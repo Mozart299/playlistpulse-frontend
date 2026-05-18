@@ -431,7 +431,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
                   <CommentSkeleton />
                 </div>
               ) : (
-                <CommentList comments={comments} userImage={userImage || '/default-avatar.png'} />
+                <CommentList comments={comments} />
               )}
             </div>
           </>

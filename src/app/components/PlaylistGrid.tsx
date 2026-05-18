@@ -77,12 +77,11 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({
                   className="block w-full h-full"
                   aria-label={`Open ${playlist.name} playlist on Spotify`}
                 >
-                  <Image 
-                    src={playlist.images[0]?.url || '/default-playlist.png'} 
-                    alt={`${playlist.name} playlist cover`} 
-                    layout="fill" 
-                    objectFit="cover"
-                    className="transition-transform duration-500 ease-out group-hover/image:scale-110"
+                  <Image
+                    src={playlist.images[0]?.url || '/default-playlist.png'}
+                    alt={`${playlist.name} playlist cover`}
+                    fill
+                    className="object-cover transition-transform duration-500 ease-out group-hover/image:scale-110"
                   />
                   
                   {/* Enhanced hover overlay */}

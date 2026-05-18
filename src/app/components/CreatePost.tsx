@@ -66,8 +66,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
   // Get Spotify token
   const { accessToken, error: tokenError } = useSpotifyToken()
 
-  // Ref for location input
+  // Refs
   const locationInputRef = useRef<HTMLInputElement>(null)
+  const emojiPickerRef = useRef<HTMLDivElement>(null)
 
   // Debounced fetch for location suggestions
   const fetchLocationSuggestions = debounce(async (query: string) => {
@@ -224,11 +225,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
     console.log('Playlist shared successfully')
   }
 
-  // Close suggestions when clicking outside
+  // Close location suggestions and emoji picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (locationInputRef.current && !locationInputRef.current.contains(event.target as Node)) {
         setShowSuggestions(false)
+      }
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -315,8 +319,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             )}
             
             {showEmojiPicker && (
-              <div className="absolute z-10 mt-2">
-                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              <div className="relative" ref={emojiPickerRef}>
+                <div className="absolute z-20 mt-2 right-0">
+                  <EmojiPicker onEmojiClick={handleEmojiClick} />
+                </div>
               </div>
             )}
             

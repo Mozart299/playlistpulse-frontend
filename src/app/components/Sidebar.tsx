@@ -3,25 +3,27 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Crown, 
-  Sparkles, 
-  Home, 
-  Music, 
-  Users, 
-  MessageSquare, 
-  Calendar, 
-  Heart, 
+import {
+  Crown,
+  Sparkles,
+  Home,
+  Music,
+  Users,
+  MessageSquare,
+  Calendar,
+  Heart,
   Settings,
   LogOut,
   Play,
   Star,
-  TrendingUp
+  TrendingUp,
+  User
 } from 'lucide-react';
 
 interface SidebarLink {
@@ -43,15 +45,20 @@ const Sidebar: React.FC = () => {
       icon: Home
     },
     {
-      route: '/discover',
-      label: 'Discover',
-      icon: TrendingUp,
-      badge: 'New'
+      route: '/my-profile',
+      label: 'My Profile',
+      icon: User
     },
     {
       route: '/all-playlists',
       label: 'My Playlists',
       icon: Play
+    },
+    {
+      route: '/discover',
+      label: 'Discover',
+      icon: TrendingUp,
+      badge: 'New'
     },
     {
       route: '/matches',
@@ -78,11 +85,6 @@ const Sidebar: React.FC = () => {
       route: '/settings',
       label: 'Settings',
       icon: Settings
-    },
-    {
-      route: '/sign-out',
-      label: 'Sign Out',
-      icon: LogOut
     }
   ];
     
@@ -99,19 +101,17 @@ const Sidebar: React.FC = () => {
         
         <nav className="flex flex-col space-y-2 mb-8">
           {sidebarLinks.map((link, index) => {
-            const isSignOut = link.label === "Sign Out";
             const isActive = pathname === link.route;
             const Icon = link.icon;
-            
+
             return (
               <Button
                 key={index}
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn(
                   "w-full justify-between h-12 px-4 transition-all duration-200",
-                  isSignOut && "text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 mt-4",
                   isActive && "bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:from-orange-600 hover:to-pink-600",
-                  !isActive && !isSignOut && "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  !isActive && "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 )}
                 asChild
               >
@@ -136,6 +136,19 @@ const Sidebar: React.FC = () => {
               </Button>
             );
           })}
+
+          <Separator className="my-2" />
+
+          <Button
+            variant="ghost"
+            className="w-full justify-start h-12 px-4 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+            onClick={() => signOut({ callbackUrl: '/' })}
+          >
+            <div className="flex items-center space-x-3">
+              <LogOut className="w-5 h-5" />
+              <span className="font-medium">Sign Out</span>
+            </div>
+          </Button>
         </nav>
       </div>
       
