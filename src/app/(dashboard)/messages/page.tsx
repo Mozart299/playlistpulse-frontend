@@ -7,8 +7,6 @@ import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { MessageSquare, Send, ArrowLeft, Plus } from 'lucide-react';
 import { cn, getInitials } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -163,15 +161,15 @@ export default function MessagesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5 text-white">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center gap-3">
-          <MessageSquare className="w-6 h-6" />
+          <MessageSquare className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold">Messages</h1>
         </div>
-        <p className="text-white/90 text-sm mt-1">Direct messages with music lovers</p>
+        <p className="text-muted-foreground text-sm mt-1">Direct messages with music lovers</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border rounded-xl overflow-hidden min-h-[500px]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border rounded-lg overflow-hidden min-h-[500px] bg-card">
         {/* Conversation List */}
         <div className={cn('border-r bg-background', showChat && 'hidden md:block')}>
           <div className="p-3 border-b flex items-center justify-between">
@@ -227,7 +225,7 @@ export default function MessagesPage() {
                       <div className="flex items-center justify-between">
                         <p className="font-medium text-sm truncate">{other.name || other.email}</p>
                         {conv.unread > 0 && (
-                          <span className="bg-blue-500 text-white text-xs rounded-full px-1.5 py-0.5 ml-1">
+                          <span className="bg-primary text-primary-foreground text-xs rounded-full px-1.5 py-0.5 ml-1">
                             {conv.unread}
                           </span>
                         )}
@@ -296,9 +294,9 @@ export default function MessagesPage() {
                         )}
                         <div
                           className={cn(
-                            'max-w-[70%] rounded-2xl px-3 py-2 text-sm',
+                            'max-w-[70%] rounded-lg px-3 py-2 text-sm',
                             isMine
-                              ? 'bg-blue-500 text-white rounded-br-sm'
+                              ? 'bg-primary text-primary-foreground rounded-br-sm'
                               : 'bg-muted text-foreground rounded-bl-sm'
                           )}
                         >

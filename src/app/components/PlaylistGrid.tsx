@@ -54,7 +54,7 @@ const PlaylistGrid: React.FC<PlaylistGridProps> = ({
           {title && <h3 className="text-xl font-bold">{title}</h3>}
           
           {showViewAll && (
-            <Link href={viewAllLink} className="text-blue-600 hover:underline text-sm">
+            <Link href={viewAllLink} className="text-primary hover:underline text-sm">
               View All
             </Link>
           )}

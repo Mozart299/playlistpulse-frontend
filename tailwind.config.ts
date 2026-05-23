@@ -19,11 +19,12 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          primary: '#F89508',
-          secondary: '#FF8A00',
-          tertiary: '#FFB84D',
-          light: '#FFF3E0',
-          dark: '#CC7A00'
+          DEFAULT: '#1DB954',
+          primary: '#1DB954',
+          secondary: '#159947',
+          tertiary: '#5DD987',
+          light: '#EAF8EF',
+          dark: '#0E6B32'
         },
         customgray: '#DEE0E4',
         background: 'hsl(var(--background))',

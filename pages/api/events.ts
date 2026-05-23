@@ -13,7 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const client = await clientPromise;
     const db = client.db('theplaylist');
     const eventsCol = db.collection('events');
-    const userEmail = session.user?.email!;
+    const userEmail = session.user?.email;
+    if (!userEmail) return res.status(401).json({ message: 'Unauthorized' });
 
     if (req.method === 'GET') {
       const { search, upcoming, limit = '50' } = req.query;

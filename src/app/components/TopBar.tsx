@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Bell, MessageSquare, Search, Music, User, Settings, LogOut, ChevronDown, Menu, ArrowLeft, X } from 'lucide-react'
+import { Bell, MessageSquare, Search, Music, User, Settings, LogOut, Menu, ArrowLeft, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -88,7 +88,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
   return (
     <div className="fixed top-0 left-0 w-full z-50">
       {/* Main bar */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm py-3 px-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-card/90 backdrop-blur-md py-3 px-4 flex items-center justify-between border-b border-border">
         {/* Logo and Mobile Menu */}
         <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Mobile Menu Button */}
@@ -104,10 +104,10 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
           </Button>
 
           <Link href="/home" className="flex items-center space-x-2 lg:space-x-3">
-            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
-              <Music className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary rounded-md flex items-center justify-center shadow-sm">
+              <Music className="w-4 h-4 lg:w-6 lg:h-6 text-primary-foreground" />
             </div>
-            <span className="text-lg lg:text-xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent hidden sm:block">
+            <span className="text-lg lg:text-xl font-bold text-foreground hidden sm:block">
               The Playlist
             </span>
           </Link>
@@ -117,12 +117,12 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
         <div className="flex-1 max-w-2xl mx-2 lg:mx-8 hidden md:block">
           <div className="relative">
             <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 transition-colors duration-200 ${
-              searchFocused ? 'text-orange-500' : 'text-gray-400'
+              searchFocused ? 'text-primary' : 'text-muted-foreground'
             }`} />
             <Input
               placeholder="Search for music, playlists, or people..."
-              className={`pl-12 text-gray-900 dark:text-white py-3 w-full bg-gray-100 dark:bg-gray-800 border-0 rounded-2xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-orange-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
-                searchFocused ? 'bg-white dark:bg-gray-700 shadow-lg' : ''
+              className={`pl-12 py-3 w-full bg-muted/60 border-border rounded-md transition-colors placeholder:text-muted-foreground ${
+                searchFocused ? 'bg-background shadow-sm' : ''
               }`}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
@@ -136,26 +136,26 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+            className="md:hidden"
             aria-label="Open search"
             onClick={() => {
               setShowMobileSearch(true)
               setTimeout(() => mobileSearchRef.current?.focus(), 50)
             }}
           >
-            <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              <Search className="h-5 w-5" />
           </Button>
 
           {/* Messages */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 hidden sm:flex"
+            className="relative hidden sm:flex"
             asChild
           >
             <Link href="/messages">
-              <MessageSquare className="h-5 w-5 lg:h-6 lg:w-6 text-gray-600 dark:text-gray-300" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 lg:w-5 lg:h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+              <MessageSquare className="h-5 w-5 lg:h-6 lg:w-6" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 lg:w-5 lg:h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
                 3
               </span>
             </Link>
@@ -166,25 +166,25 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
             <Button
               variant="ghost"
               size="icon"
-              className="relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+              className="relative"
               onClick={() => setShowNotifications(!showNotifications)}
               aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
               aria-expanded={showNotifications}
             >
-              <Bell className="h-5 w-5 lg:h-6 lg:w-6 text-gray-600 dark:text-gray-300" />
+              <Bell className="h-5 w-5 lg:h-6 lg:w-6" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full" />
               )}
             </Button>
 
             {/* Notifications Dropdown — capped to viewport width on mobile */}
             {showNotifications && (
-              <div className="absolute right-0 top-12 w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-4 z-50">
-                <div className="px-4 sm:px-6 pb-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="absolute right-0 top-12 w-80 max-w-[calc(100vw-1rem)] bg-popover text-popover-foreground rounded-lg shadow-lg border border-border py-4 z-50">
+                <div className="px-4 sm:px-6 pb-3 border-b border-border">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                    <h3 className="font-semibold text-foreground">Notifications</h3>
                     {unreadCount > 0 && (
-                      <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded-full">
+                      <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-md">
                         {unreadCount} new
                       </span>
                     )}
@@ -194,26 +194,26 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`px-4 sm:px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
-                        !notification.read ? 'bg-orange-50 dark:bg-orange-900/20' : ''
+                      className={`px-4 sm:px-6 py-3 hover:bg-accent cursor-pointer transition-colors ${
+                        !notification.read ? 'bg-accent/60' : ''
                       }`}
                     >
                       <div className="flex items-start space-x-3">
                         <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                          !notification.read ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+                          !notification.read ? 'bg-primary' : 'bg-muted-foreground/30'
                         }`} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900 dark:text-white">{notification.message}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{notification.time}</p>
+                          <p className="text-sm text-foreground">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="px-4 sm:px-6 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-4 sm:px-6 pt-3 border-t border-border">
                   <Button
                     variant="ghost"
-                    className="w-full text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    className="w-full"
                     onClick={() => setShowNotifications(false)}
                   >
                     View All Notifications
@@ -226,51 +226,51 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
           {/* Profile Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 lg:h-10 lg:w-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
-                <Avatar className="h-7 w-7 lg:h-9 lg:w-9 border-2 border-orange-500/20">
+              <Button variant="ghost" className="relative h-8 w-8 lg:h-10 lg:w-10">
+                <Avatar className="h-7 w-7 lg:h-9 lg:w-9 border border-border">
                   <AvatarImage src={session?.user?.image || ''} alt="Profile" />
-                  <AvatarFallback className="bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold text-sm">
+                  <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-sm">
                     {getInitials(session?.user?.name)}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl" align="end" forceMount>
+            <DropdownMenuContent className="w-64" align="end" forceMount>
               <DropdownMenuLabel className="font-normal px-4 py-3">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
+                  <p className="text-sm font-medium leading-none text-foreground">
                     {session?.user?.name}
                   </p>
-                  <p className="text-xs leading-none text-gray-500 dark:text-gray-400 truncate">
+                  <p className="text-xs leading-none text-muted-foreground truncate">
                     {session?.user?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+              <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+                className="px-4 py-3 cursor-pointer"
                 onSelect={() => router.push('/my-profile')}
               >
                 <User className="mr-3 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+                className="px-4 py-3 cursor-pointer"
                 onSelect={() => router.push('/all-playlists')}
               >
                 <Music className="mr-3 h-4 w-4" />
                 <span>My Playlists</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700"
+                className="px-4 py-3 cursor-pointer"
                 onSelect={() => router.push('/settings')}
               >
                 <Settings className="mr-3 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+              <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="px-4 py-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 focus:bg-red-50 dark:focus:bg-red-900/20 text-red-600 dark:text-red-400"
+                className="px-4 py-3 cursor-pointer text-destructive focus:text-destructive"
                 onSelect={handleSignOut}
               >
                 <LogOut className="mr-3 h-4 w-4" />
@@ -283,7 +283,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
 
       {/* Mobile Search Bar — slides in below the top bar */}
       {showMobileSearch && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-2">
+        <div className="md:hidden bg-card border-b border-border px-3 py-2 flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -294,11 +294,11 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle, isMobileMenuOpen = 
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               ref={mobileSearchRef}
               placeholder="Search music, playlists, people..."
-              className="pl-9 bg-gray-100 dark:bg-gray-800 border-0 rounded-xl focus-visible:ring-2 focus-visible:ring-orange-500"
+              className="pl-9 bg-muted/60 border-border"
             />
           </div>
           <Button

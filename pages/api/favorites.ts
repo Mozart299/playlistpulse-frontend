@@ -14,7 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db('theplaylist');
     const favCol = db.collection('favorites');
     const postsCol = db.collection('posts');
-    const userEmail = session.user?.email!;
+    const userEmail = session.user?.email;
+    if (!userEmail) return res.status(401).json({ message: 'Unauthorized' });
 
     if (req.method === 'GET') {
       const { postId } = req.query;

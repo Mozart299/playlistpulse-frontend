@@ -48,12 +48,12 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div className="bg-gradient-to-r from-slate-600 to-slate-800 rounded-2xl p-5 text-white">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center gap-3">
-          <Settings className="w-6 h-6" />
+          <Settings className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold">Settings</h1>
         </div>
-        <p className="text-white/90 text-sm mt-1">Manage your profile and preferences</p>
+        <p className="text-muted-foreground text-sm mt-1">Manage your profile and preferences</p>
       </div>
 
       {/* Profile Card */}

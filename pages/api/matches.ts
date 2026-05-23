@@ -32,7 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = await getServerSession(req, res, authOptions) as CustomSession | null;
     if (!session) return res.status(401).json({ message: 'Unauthorized' });
 
-    const userEmail = session.user?.email!;
+    const userEmail = session.user?.email;
+    if (!userEmail) return res.status(401).json({ message: 'Unauthorized' });
     const client = await clientPromise;
     const db = client.db('theplaylist');
     const profilesCol = db.collection('taste_profiles');

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -85,6 +85,9 @@ export default function EventsPage() {
   };
 
   const handleRsvp = async (event: Event) => {
+    const userEmail = session?.user?.email;
+    if (!userEmail) return;
+
     setRsvpLoading(event._id);
     try {
       const res = await axios.patch('/api/events', { eventId: event._id });
@@ -94,8 +97,8 @@ export default function EventsPage() {
             ? {
                 ...e,
                 attendees: res.data.attending
-                  ? [...e.attendees, session?.user?.email!]
-                  : e.attendees.filter(a => a !== session?.user?.email),
+                  ? [...e.attendees, userEmail]
+                  : e.attendees.filter(a => a !== userEmail),
               }
             : e
         )
@@ -122,18 +125,18 @@ export default function EventsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl p-5 text-white">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <Calendar className="w-6 h-6" />
+              <Calendar className="w-6 h-6 text-primary" />
               <h1 className="text-2xl font-bold">Events</h1>
             </div>
-            <p className="text-white/90 text-sm">Music events from the community</p>
+            <p className="text-muted-foreground text-sm">Music events from the community</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2 bg-white/20 hover:bg-white/30 text-white border-0">
+              <Button className="gap-2">
                 <Plus className="w-4 h-4" /> Create
               </Button>
             </DialogTrigger>
@@ -262,12 +265,12 @@ export default function EventsPage() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className={cn(
                               'text-sm font-semibold',
-                              event.price === 'Free' ? 'text-green-600' : 'text-foreground'
+                              event.price === 'Free' ? 'text-primary' : 'text-foreground'
                             )}>
                               {event.price}
                             </span>
                             {event.link && (
-                              <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+                              <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
                                 View details →
                               </a>
                             )}
@@ -279,7 +282,7 @@ export default function EventsPage() {
                             variant={attending ? 'default' : 'outline'}
                             onClick={() => handleRsvp(event)}
                             disabled={rsvpLoading === event._id}
-                            className={cn(attending && 'bg-green-500 hover:bg-green-600')}
+                            className={cn(attending && 'bg-primary hover:bg-primary/90')}
                           >
                             {rsvpLoading === event._id ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -289,7 +292,7 @@ export default function EventsPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               onClick={() => handleDelete(event._id)}
                             >
                               <Trash2 className="w-3.5 h-3.5" />

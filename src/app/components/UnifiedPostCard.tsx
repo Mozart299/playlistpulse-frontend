@@ -115,8 +115,8 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
       componentTokens.card.hover,
       componentTokens.card.interactive,
       'overflow-hidden animate-fadeIn',
-      isPlaylistPost && 'border-l-4 border-l-brand-primary/30',
-      !isPlaylistPost && images.length > 0 && 'border-l-4 border-l-blue-500/30',
+      isPlaylistPost && 'border-primary/20',
+      !isPlaylistPost && images.length > 0 && 'border-primary/10',
       isCompact ? 'mb-4' : 'mb-6',
       className
     )}>
@@ -124,11 +124,11 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className={cn(
-              'border-2 border-brand-primary/10',
+              'border border-border',
               isCompact ? 'h-9 w-9' : 'h-11 w-11'
             )}>
               <AvatarImage src={userImage} alt={post.user} />
-              <AvatarFallback className="bg-brand-light text-brand-primary font-medium">
+              <AvatarFallback className="bg-primary/10 text-primary font-medium">
                 {getInitials(post.user)}
               </AvatarFallback>
             </Avatar>
@@ -142,7 +142,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
             </div>
           </div>
           {isPlaylistPost && (
-            <Badge variant="secondary" className="gap-1 bg-brand-light text-brand-primary border-brand-primary/20">
+            <Badge variant="secondary" className="gap-1">
               <Music className="w-3 h-3" />
               Playlist
             </Badge>
@@ -185,10 +185,10 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
         )}
 
         {isPlaylistPost && playlistInfo && (
-          <Card className="mb-4 bg-gradient-to-br from-brand-light/50 to-brand-primary/5 border-brand-primary/20 overflow-hidden">
+          <Card className="mb-4 bg-muted/40 border-primary/15 overflow-hidden shadow-none">
             <CardContent className="p-4">
               <div className="flex items-center gap-3 mb-3">
-                <Music className="w-5 h-5 text-brand-primary" />
+                <Music className="w-5 h-5 text-primary" />
                 <h4 className="font-semibold text-foreground">{playlistInfo.name}</h4>
               </div>
               <div className="flex items-start space-x-4">
@@ -202,7 +202,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
                     <Button
                       size="icon"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-brand-primary hover:bg-brand-secondary text-white rounded-full h-10 w-10 shadow-glow"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full h-10 w-10"
                       onClick={() => window.open(playlistInfo.url, '_blank')}
                       aria-label={`Play ${playlistInfo.name} on Spotify`}
                     >
@@ -216,7 +216,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
                     href={playlistInfo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-brand-primary hover:text-brand-secondary text-sm font-medium hover:underline transition-colors duration-200"
+                    className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium hover:underline transition-colors"
                   >
                     <ExternalLink className="h-3.5 w-3.5 mr-1" />
                     Open in Spotify
@@ -233,7 +233,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
             <div className="flex justify-between items-center py-2 text-sm text-muted-foreground">
               {likeCount > 0 && (
                 <div className="flex items-center gap-1">
-                  <Heart className="h-4 w-4 text-red-500" />
+                  <Heart className="h-4 w-4 text-primary" />
                   <span className="font-medium">{likeCount}</span>
                 </div>
               )}
@@ -286,8 +286,8 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
           className={cn(
             'flex items-center gap-2 transition-all duration-200',
             userLiked
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20'
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+              : 'hover:bg-accent hover:text-accent-foreground'
           )}
           onClick={handleLike}
           disabled={loadingInteraction}
@@ -300,7 +300,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/20 transition-all duration-200"
+          className="flex items-center gap-2"
           onClick={handleCommentClick}
           aria-label="Comment on post"
         >
@@ -311,7 +311,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 hover:bg-brand-light hover:text-brand-primary dark:hover:bg-brand-primary/10 transition-all duration-200"
+          className="flex items-center gap-2"
           onClick={handleShare}
           aria-label="Share post"
         >
@@ -324,7 +324,7 @@ const UnifiedPostCard: React.FC<UnifiedPostCardProps> = ({
           size="sm"
           className={cn(
             'transition-all duration-200',
-            isBookmarked ? 'text-yellow-500 hover:text-yellow-600' : 'hover:text-yellow-500'
+            isBookmarked ? 'text-primary hover:text-primary' : 'hover:text-primary'
           )}
           onClick={toggleBookmark}
           aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}

@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -244,18 +245,18 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
 
   return (
     <>
-      <Card className="mb-6 shadow-sm border-2 border-transparent hover:border-brand/20 transition-colors duration-200">
+      <Card className="mb-6 border-border shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <Avatar className="h-11 w-11 border-2 border-brand/10">
+            <Avatar className="h-11 w-11 border border-border">
               <AvatarImage src={userImage} alt={userName} />
-              <AvatarFallback className="bg-brand/5 text-brand font-medium">
+              <AvatarFallback className="bg-primary/10 text-primary font-medium">
                 {userName?.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="font-semibold text-gray-900 dark:text-white">Create a post</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Share what's on your mind</p>
+              <p className="font-semibold text-foreground">Create a post</p>
+              <p className="text-sm text-muted-foreground">Share what's on your mind</p>
             </div>
             {selectedPlaylist && (
               <Badge variant="secondary" className="gap-1">
@@ -272,17 +273,17 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
               placeholder={`What's on your mind, ${userName?.split(' ')[0]}?`}
-              className="flex-1 text-gray-900 dark:text-white resize-none focus-visible:ring-2 focus-visible:ring-brand/20 border-0 bg-muted/30 text-base placeholder:text-gray-500 dark:placeholder:text-gray-400"
+              className="flex-1 resize-none border-0 bg-muted/40 text-base shadow-none"
               rows={4}
             />
             
             {selectedLocation && (
-              <div className="mt-3 p-3 bg-muted/30 rounded-lg border">
+              <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-brand-primary" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Location</span>
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Location</span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{selectedLocation.display_name}</p>
+                <p className="text-sm text-muted-foreground mt-1">{selectedLocation.display_name}</p>
                 <Button
                   type="button"
                   variant="ghost"
@@ -329,12 +330,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             
             {showLinkInput && (
               <div className="mt-2 flex items-center space-x-2">
-                <input
+                <Input
                   type="text"
                   value={linkInput}
                   onChange={(e) => setLinkInput(e.target.value)}
                   placeholder="Enter a URL (e.g., https://example.com)"
-                  className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-colors"
+                  className="flex-1"
                   aria-label="Enter URL"
                 />
                 <Button
@@ -363,12 +364,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             {showLocationInput && (
               <div className="mt-2 relative" ref={locationInputRef}>
                 <div className="flex items-center space-x-2">
-                  <input
+                  <Input
                     type="text"
                     value={locationInput}
                     onChange={handleLocationInputChange}
                     placeholder="Search for a location (e.g., New York, NY)"
-                    className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-colors"
+                    className="flex-1"
                     aria-label="Search for a location"
                     autoComplete="off"
                   />
@@ -398,14 +399,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 </div>
                 {showSuggestions && locationSuggestions.length > 0 && (
                   <ul
-                    className="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg mt-1 max-h-60 overflow-auto"
+                    className="absolute z-10 w-full bg-popover text-popover-foreground border border-border rounded-lg shadow-lg mt-1 max-h-60 overflow-auto"
                     role="listbox"
                     aria-label="Location suggestions"
                   >
                     {locationSuggestions.map((suggestion) => (
                       <li
                         key={suggestion.place_id}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-900 dark:text-white transition-colors"
+                        className="p-2 hover:bg-accent cursor-pointer text-sm transition-colors"
                         onClick={() => handleSuggestionSelect(suggestion)}
                         onKeyDown={(e) => handleSuggestionKeyDown(e, suggestion)}
                         role="option"
@@ -436,7 +437,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                  className="text-muted-foreground hover:text-foreground"
                   type="button"
                   aria-label="Upload photo"
                 >
@@ -448,7 +449,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+                className="text-muted-foreground hover:text-foreground"
                 type="button"
                 onClick={() => setShowLinkInput(true)}
                 aria-label="Insert link"
@@ -460,7 +461,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-purple-600 hover:bg-purple-50 transition-all duration-200"
+                className="text-muted-foreground hover:text-foreground"
                 type="button"
                 onClick={() => setShowLocationInput(true)}
                 aria-label="Insert location"
@@ -472,7 +473,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-yellow-600 hover:bg-yellow-50 transition-all duration-200"
+                className="text-muted-foreground hover:text-foreground"
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 aria-label="Toggle emoji picker"
@@ -485,7 +486,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-brand hover:bg-brand/10 transition-all duration-200"
+                className="text-muted-foreground hover:text-primary hover:bg-primary/10"
                 type="button"
                 onClick={handlePlaylistButtonClick}
                 aria-label="Share playlist"
@@ -498,7 +499,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ userImage, userName, onPostSubm
             <Button 
               type="submit" 
               disabled={!isPostValid() || isSubmitting}
-              className="bg-brand hover:bg-brand/90 text-white font-medium px-4 sm:px-6 gap-2 shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0 ml-auto"
+              className="font-medium px-4 sm:px-6 gap-2 flex-shrink-0 ml-auto"
             >
               {isSubmitting ? (
                 <>

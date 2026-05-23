@@ -27,10 +27,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
       {/* Menu Panel */}
-      <div className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-xl flex flex-col">
+      <div className="fixed top-0 left-0 h-full w-80 bg-card border-r border-border shadow-xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 pt-20 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Menu</h2>
+        <div className="flex items-center justify-between p-6 pt-20 border-b border-border">
+          <h2 className="text-lg font-bold text-foreground">Menu</h2>
           <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
             <X className="h-5 w-5" />
           </Button>
@@ -49,8 +49,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                   variant={isActive ? 'secondary' : 'ghost'}
                   className={cn(
                     'w-full justify-between h-11 px-4 transition-all duration-200',
-                    isActive && 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg hover:from-orange-600 hover:to-pink-600',
-                    !isActive && 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    isActive && 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
+                    !isActive && 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   )}
                   asChild
                   onClick={onClose}
@@ -62,12 +62,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     </div>
                     <div className="flex items-center space-x-1">
                       {link.badge && (
-                        <Badge variant="secondary" className="text-xs bg-blue-500 text-white border-0">
+                        <Badge variant="secondary" className="text-xs">
                           {link.badge}
                         </Badge>
                       )}
                       {link.count != null && link.count > 0 && (
-                        <Badge variant="secondary" className="text-xs bg-red-500 text-white border-0">
+                        <Badge variant="outline" className="text-xs border-primary/25 text-primary">
                           {link.count}
                         </Badge>
                       )}
@@ -81,7 +81,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
             <Button
               variant="ghost"
-              className="w-full justify-start h-11 px-4 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+              className="w-full justify-start h-11 px-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
               onClick={() => { onClose(); signOut({ callbackUrl: '/' }); }}
             >
               <LogOut className="w-5 h-5 mr-3" />

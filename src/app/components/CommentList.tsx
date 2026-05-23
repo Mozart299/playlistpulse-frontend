@@ -18,7 +18,7 @@ interface CommentListProps {
 const CommentList: React.FC<CommentListProps> = ({ comments }) => {
   if (comments.length === 0) {
     return (
-      <div className="text-center py-4 text-gray-500 text-sm">
+      <div className="text-center py-4 text-muted-foreground text-sm">
         No comments yet. Be the first to comment!
       </div>
     );
@@ -42,17 +42,17 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
   return (
     <div className="flex space-x-2">
       <Avatar className="h-8 w-8 mt-0.5 flex-shrink-0">
-        <AvatarFallback className="bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs font-medium">
+        <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
           {getInitials(comment.username)}
         </AvatarFallback>
       </Avatar>
 
       <div className="flex-1">
-        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
-          <div className="font-medium text-sm text-gray-900 dark:text-white">{comment.username}</div>
-          <p className="text-sm text-gray-700 dark:text-gray-300">{comment.content}</p>
+        <div className="bg-muted rounded-lg px-3 py-2">
+          <div className="font-medium text-sm text-foreground">{comment.username}</div>
+          <p className="text-sm text-foreground/80">{comment.content}</p>
         </div>
-        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 pl-1">
+        <div className="mt-1 text-xs text-muted-foreground pl-1">
           {relativeTime}
         </div>
       </div>

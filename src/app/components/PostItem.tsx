@@ -186,7 +186,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
           size="sm"
           className={cn(
             'flex items-center gap-2 transition-all duration-200',
-            userLiked ? 'bg-red-500 hover:bg-red-600 text-white' : 'hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20'
+            userLiked ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'hover:bg-accent hover:text-accent-foreground'
           )}
           onClick={handleLike}
           disabled={loadingInteraction}
@@ -198,7 +198,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/20 transition-all duration-200"
+          className="flex items-center gap-2"
           onClick={handleCommentClick}
         >
           <MessageSquare className="h-4 w-4" />
@@ -208,7 +208,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 hover:bg-orange-50 hover:text-orange-600 transition-all duration-200"
+          className="flex items-center gap-2"
           onClick={handleShare}
         >
           <Share2 className="h-4 w-4" />
@@ -220,7 +220,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, userImage }) => {
           size="sm"
           className={cn(
             'flex items-center gap-2 transition-all duration-200',
-            isBookmarked ? 'text-yellow-500 hover:text-yellow-600' : 'hover:text-yellow-500'
+            isBookmarked ? 'text-primary hover:text-primary' : 'hover:text-primary'
           )}
           onClick={toggleBookmark}
           aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}

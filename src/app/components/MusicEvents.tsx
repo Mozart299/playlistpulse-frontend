@@ -57,7 +57,7 @@ const MusicEvents: React.FC<MusicEventsProps> = ({ events }) => {
         </div>
         
         <div className="text-center mt-4">
-          <Link href="/events" className="text-sm text-blue-600 hover:underline">
+          <Link href="/events" className="text-sm text-primary hover:underline">
             View all events
           </Link>
         </div>

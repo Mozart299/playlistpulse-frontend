@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Users, RefreshCw, Music2, MessageSquare, UserCircle, AlertCircle } from 'lucide-react';
 import { MusicMatchSkeleton } from '@/components/ui/skeletons';
@@ -24,7 +23,6 @@ interface Match {
 }
 
 export default function MatchesPage() {
-  const { data: session } = useSession();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,21 +49,21 @@ export default function MatchesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-5 text-white">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <Users className="w-6 h-6" />
+              <Users className="w-6 h-6 text-primary" />
               <h1 className="text-2xl font-bold">Music Matches</h1>
             </div>
-            <p className="text-white/90 text-sm">People with similar taste, powered by Spotify</p>
+            <p className="text-muted-foreground text-sm">People with similar taste, powered by Spotify</p>
           </div>
           <Button
             variant="secondary"
             size="sm"
             onClick={() => fetchMatches(true)}
             disabled={refreshing}
-            className="gap-2 bg-white/20 hover:bg-white/30 text-white border-0"
+            className="gap-2"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
@@ -77,7 +75,7 @@ export default function MatchesPage() {
       <Card className="bg-muted/50 border-dashed">
         <CardContent className="pt-4 pb-3">
           <div className="flex items-start gap-3 text-sm text-muted-foreground">
-            <Music2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
+            <Music2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
             <p>
               Matches are based on your top Spotify artists. The more artists you share with someone,
               the higher your compatibility. Hit <strong>Refresh</strong> to sync your latest taste.
@@ -115,16 +113,16 @@ export default function MatchesPage() {
             <Card key={match.email} className="hover:shadow-md transition-shadow">
               <CardContent className="pt-5">
                 <div className="flex items-start gap-4">
-                  <Avatar className="h-14 w-14 border-2 border-orange-500/20 flex-shrink-0">
+                  <Avatar className="h-14 w-14 border border-border flex-shrink-0">
                     <AvatarImage src={match.image} alt={match.name} />
-                    <AvatarFallback className="bg-orange-100 text-orange-700 text-lg font-semibold">
+                    <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
                       {getInitials(match.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-foreground truncate">{match.name || match.email}</p>
                     <div className="flex items-center gap-2 mt-1 mb-2">
-                      <span className="text-sm font-semibold text-orange-500">{match.similarity}% match</span>
+                      <span className="text-sm font-semibold text-primary">{match.similarity}% match</span>
                     </div>
                     <Progress value={match.similarity} className="h-1.5 mb-3" />
                     {match.sharedArtists.length > 0 && (
@@ -145,7 +143,7 @@ export default function MatchesPage() {
                           <UserCircle className="w-3.5 h-3.5" /> Profile
                         </Link>
                       </Button>
-                      <Button size="sm" className="gap-1.5 flex-1 bg-orange-500 hover:bg-orange-600" asChild>
+                      <Button size="sm" className="gap-1.5 flex-1" asChild>
                         <Link href={`/messages?with=${encodeURIComponent(match.email)}&name=${encodeURIComponent(match.name || '')}&image=${encodeURIComponent(match.image || '')}`}>
                           <MessageSquare className="w-3.5 h-3.5" /> Message
                         </Link>

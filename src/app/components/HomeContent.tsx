@@ -73,11 +73,11 @@ const HomeContent: React.FC = () => {
         <FeedSkeleton count={3} />
       ) : error ? (
         <Card className="p-8 text-center">
-          <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-            <RefreshCw className="w-6 h-6 text-red-500" />
+          <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <RefreshCw className="w-6 h-6 text-destructive" />
           </div>
-          <p className="text-red-500 font-medium mb-1">Failed to load posts</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{error}</p>
+          <p className="text-destructive font-medium mb-1">Failed to load posts</p>
+          <p className="text-sm text-muted-foreground mb-4">{error}</p>
           <Button variant="outline" onClick={fetchPosts} className="gap-2">
             <RefreshCw className="w-4 h-4" />
             Try again
@@ -85,11 +85,11 @@ const HomeContent: React.FC = () => {
         </Card>
       ) : posts.length === 0 ? (
         <Card className="p-10 text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-orange-500/20">
-            <Music className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-5">
+            <Music className="w-8 h-8 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No posts yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Be the first to share a playlist or start a conversation!</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">No posts yet</h3>
+          <p className="text-muted-foreground text-sm">Be the first to share a playlist or start a conversation!</p>
         </Card>
       ) : (
         <div className="space-y-6">

@@ -109,7 +109,7 @@ const PlaylistPostCard: React.FC<PlaylistPostCardProps> = ({ post, userImage }) 
                 href={post.playlistUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-600 text-sm hover:underline"
+                className="inline-flex items-center text-primary text-sm hover:underline"
               >
                 <ExternalLink className="h-3.5 w-3.5 mr-1" />
                 Open in Spotify
@@ -174,8 +174,8 @@ const PlaylistPostCard: React.FC<PlaylistPostCardProps> = ({ post, userImage }) 
           className={cn(
             'flex items-center gap-2 transition-all duration-200',
             userLiked
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20'
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+              : 'hover:bg-accent hover:text-accent-foreground'
           )}
           onClick={handleLike}
           disabled={loadingInteraction}
@@ -187,7 +187,7 @@ const PlaylistPostCard: React.FC<PlaylistPostCardProps> = ({ post, userImage }) 
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/20 transition-all duration-200"
+          className="flex items-center gap-2"
           onClick={handleCommentClick}
           aria-label="Comment on post"
         >
@@ -197,7 +197,7 @@ const PlaylistPostCard: React.FC<PlaylistPostCardProps> = ({ post, userImage }) 
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 hover:bg-orange-50 hover:text-orange-600 transition-all duration-200"
+          className="flex items-center gap-2"
           onClick={handleShare}
           aria-label="Share post"
         >

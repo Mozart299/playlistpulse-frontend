@@ -1,13 +1,13 @@
 export const designSystem = {
   colors: {
     brand: {
-      primary: '#F89508',
-      secondary: '#FF8A00',
-      tertiary: '#FFB84D',
-      light: '#FFF3E0',
-      dark: '#CC7A00',
-      gradient: 'from-orange-500 to-orange-600',
-      gradientHover: 'from-orange-600 to-orange-700'
+      primary: '#1DB954',
+      secondary: '#159947',
+      tertiary: '#5DD987',
+      light: '#EAF8EF',
+      dark: '#0E6B32',
+      gradient: 'from-brand-primary to-brand-secondary',
+      gradientHover: 'from-brand-secondary to-brand-dark'
     },
     semantic: {
       success: {
@@ -74,8 +74,8 @@ export const designSystem = {
     md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
     lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
     xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-    glow: '0 0 20px rgb(248 149 8 / 0.3)',
-    glowHover: '0 0 30px rgb(248 149 8 / 0.4)'
+    glow: '0 0 20px rgb(29 185 84 / 0.2)',
+    glowHover: '0 0 30px rgb(29 185 84 / 0.28)'
   },
   typography: {
     headingPrimary: 'text-2xl font-bold text-gray-900 dark:text-white',
@@ -103,21 +103,21 @@ export const designSystem = {
 // Component-specific design tokens
 export const componentTokens = {
   card: {
-    default: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm',
-    hover: 'hover:shadow-md hover:-translate-y-0.5',
+    default: 'bg-card text-card-foreground border border-border rounded-lg shadow-sm',
+    hover: 'hover:shadow-md hover:border-primary/20',
     interactive: 'cursor-pointer transition-all duration-200 ease-out'
   },
   button: {
-    primary: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200',
-    secondary: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium px-4 py-2 rounded-lg transition-all duration-200',
-    ghost: 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg transition-all duration-200'
+    primary: 'bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-4 py-2 rounded-md transition-colors',
+    secondary: 'bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium px-4 py-2 rounded-md transition-colors',
+    ghost: 'hover:bg-accent hover:text-accent-foreground text-muted-foreground px-3 py-2 rounded-md transition-colors'
   },
   input: {
-    default: 'bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200',
+    default: 'bg-background border border-input rounded-md px-3 py-2 focus:ring-2 focus:ring-ring/30 focus:border-ring transition-colors',
     error: 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500'
   },
   badge: {
-    primary: 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded-full text-xs font-medium',
+    primary: 'bg-primary/10 text-primary px-2 py-1 rounded-md text-xs font-medium',
     success: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 px-2 py-1 rounded-full text-xs font-medium',
     warning: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded-full text-xs font-medium',
     error: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 px-2 py-1 rounded-full text-xs font-medium'

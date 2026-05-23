@@ -87,12 +87,12 @@ export default function DiscoverPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-5 text-white">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center gap-3 mb-1">
-          <TrendingUp className="w-6 h-6" />
+          <TrendingUp className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold">Discover</h1>
         </div>
-        <p className="text-white/90 text-sm">Browse playlists shared by the community</p>
+        <p className="text-muted-foreground text-sm">Browse playlists shared by the community</p>
       </div>
 
       {/* Search + Tabs */}

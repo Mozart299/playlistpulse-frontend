@@ -16,7 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const postsCol = db.collection('posts');
 
     if (req.method === 'GET') {
-      const email = (req.query.email as string) || session.user?.email!;
+      const email = (req.query.email as string) || session.user?.email;
+      if (!email) return res.status(401).json({ message: 'Unauthorized' });
 
       const [settings, tasteProfile, posts] = await Promise.all([
         settingsCol.findOne({ email }),
@@ -38,7 +39,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'POST') {
-      const userEmail = session.user?.email!;
+      const userEmail = session.user?.email;
+      if (!userEmail) return res.status(401).json({ message: 'Unauthorized' });
       const { displayName, bio } = req.body;
 
       await settingsCol.updateOne(

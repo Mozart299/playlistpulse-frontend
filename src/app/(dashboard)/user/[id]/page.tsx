@@ -80,27 +80,27 @@ export default function UserProfilePage() {
   return (
     <div className="space-y-6">
       {/* Profile Header */}
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white">
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
         <div className="flex items-start gap-5">
-          <Avatar className="h-20 w-20 border-4 border-white/30 flex-shrink-0">
+          <Avatar className="h-20 w-20 border border-border flex-shrink-0">
             <AvatarImage src={profile.image} alt={displayName} />
-            <AvatarFallback className="text-2xl font-bold bg-white/20 text-white">
+            <AvatarFallback className="text-2xl font-bold bg-primary/10 text-primary">
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold truncate">{displayName}</h1>
-            {profile.bio && <p className="text-white/90 text-sm mt-1">{profile.bio}</p>}
-            <div className="flex items-center gap-4 mt-2 text-white/80 text-sm">
-              <span><strong className="text-white">{profile.postCount}</strong> posts</span>
-              <span><strong className="text-white">{playlistPosts.length}</strong> playlists shared</span>
+            {profile.bio && <p className="text-muted-foreground text-sm mt-1">{profile.bio}</p>}
+            <div className="flex items-center gap-4 mt-2 text-muted-foreground text-sm">
+              <span><strong className="text-foreground">{profile.postCount}</strong> posts</span>
+              <span><strong className="text-foreground">{playlistPosts.length}</strong> playlists shared</span>
             </div>
           </div>
           {!isOwnProfile && (
             <Button
               size="sm"
               variant="secondary"
-              className="gap-1.5 bg-white/20 hover:bg-white/30 text-white border-0 flex-shrink-0"
+              className="gap-1.5 flex-shrink-0"
               asChild
             >
               <Link href={`/messages?with=${encodeURIComponent(email)}&name=${encodeURIComponent(displayName)}&image=${encodeURIComponent(profile.image || '')}`}>
@@ -109,7 +109,7 @@ export default function UserProfilePage() {
             </Button>
           )}
           {isOwnProfile && (
-            <Button size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0" asChild>
+            <Button size="sm" variant="secondary" asChild>
               <Link href="/settings">Edit Profile</Link>
             </Button>
           )}
@@ -119,7 +119,7 @@ export default function UserProfilePage() {
         {profile.topGenres.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-4">
             {profile.topGenres.map(g => (
-              <Badge key={g} className="bg-white/20 text-white border-0 capitalize text-xs">{g}</Badge>
+              <Badge key={g} variant="secondary" className="capitalize text-xs">{g}</Badge>
             ))}
           </div>
         )}
